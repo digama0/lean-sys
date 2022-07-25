@@ -15,7 +15,7 @@ pub mod usize_;
 pub use boxing::*;
 pub use float::*;
 pub use name::*;
-pub use std::*;
+pub use st::*;
 pub use uint16::*;
 pub use uint32::*;
 pub use uint64::*;

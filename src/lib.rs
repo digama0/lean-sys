@@ -37,7 +37,6 @@ pub use io::*;
 pub use nat::*;
 pub use primitive::*;
 pub use sarray::*;
-pub use std::*;
 pub use string::*;
 pub use task::*;
 pub use thunk::*;
