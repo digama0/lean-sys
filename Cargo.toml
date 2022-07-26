@@ -1,6 +1,6 @@
 [package]
 name = "lean-sys"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["Jad Ghalayini <jeg74@cl.cam.ac.uk>"]
 edition = "2021"
 description = "Bindings to Lean 4's C API"
