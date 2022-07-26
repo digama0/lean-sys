@@ -22,7 +22,7 @@ use parking_lot::Mutex;
 pub static LEAN_INIT_MUTEX: Mutex<()> = Mutex::new(());
 
 /// A helper function to call [`lean_initialize_runtime_module`] while holding the [`LEAN_INIT_MUTEX`].
-/// 
+///
 /// This is equivalent to writing
 /// ```rust
 /// # use lean_sys::*;
@@ -37,7 +37,7 @@ pub unsafe fn lean_initialize_runtime_module_locked() {
     lean_initialize_runtime_module();
 }
 
-/// A helper function to call [`lean_initialize`] while holding the [`LEAN_INIT_MUTEX`]./// 
+/// A helper function to call [`lean_initialize`] while holding the [`LEAN_INIT_MUTEX`].///
 /// This is equivalent to writing
 /// ```rust
 /// # use lean_sys::*;
