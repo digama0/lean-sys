@@ -17,6 +17,7 @@ pub mod constructor;
 pub mod dbg;
 pub mod external;
 pub mod fixpoint;
+pub mod init;
 pub mod int;
 pub mod io;
 pub mod nat;
@@ -32,6 +33,7 @@ pub use constructor::*;
 pub use dbg::*;
 pub use external::*;
 pub use fixpoint::*;
+pub use init::*;
 pub use int::*;
 pub use io::*;
 pub use nat::*;
@@ -461,9 +463,6 @@ pub unsafe fn lean_set_non_heap_header_for_big(o: *mut lean_object, tag: c_uint,
 
 #[link(name = "leanshared")]
 extern "C" {
-    pub fn lean_initialize_runtime_module();
-    pub fn lean_initialize();
-
     pub fn lean_set_exit_on_panic(flag: bool);
     /// Enable/disable panic messages
     pub fn lean_set_panic_messages(flag: bool);
@@ -495,6 +494,3 @@ extern "C" {
     pub fn lean_mark_mt(o: *mut lean_object);
     pub fn lean_mark_persistent(o: *mut lean_object);
 }
-
-#[cfg(test)]
-mod test {}

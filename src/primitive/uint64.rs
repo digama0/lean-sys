@@ -17,11 +17,6 @@ pub unsafe fn lean_uint64_of_nat_mk(a: lean_obj_arg) -> u64 {
 }
 
 #[inline(always)]
-pub unsafe fn lean_uint64_to_nat(a: u64) -> lean_obj_res {
-    lean_usize_to_nat(a as usize)
-}
-
-#[inline(always)]
 pub fn lean_uint64_add(a1: u64, a2: u64) -> u64 {
     a1.wrapping_add(a2)
 }
