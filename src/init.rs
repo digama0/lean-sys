@@ -6,6 +6,7 @@ use parking_lot::Mutex;
 /// A convenience mutex, since [`lean_initialize_runtime_module`] and [`lean_initialize`] are *not* thread-safe.
 /// 
 /// It is convention to hold this when initializing Lean's runtime, or Lean modules, to make sure only one thread at a time is doing so.
+/// This is used in this library to safely implement tests, but it is the user's responsibility to uphold thread-safety when using this API.
 /// 
 /// # Examples
 /// ```rust

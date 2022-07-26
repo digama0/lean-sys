@@ -210,14 +210,12 @@ pub unsafe fn lean_free_small_object(o: *mut lean_object) {
 
 #[inline(always)]
 pub unsafe fn lean_ptr_tag(o: *const lean_object) -> u8 {
-    // Read m_tag
-    (*raw_field!(o, lean_object, _bitfield_1)).get(24usize, 8u8) as u8
+    *raw_field!(o, lean_object, m_tag) as u8
 }
 
 #[inline(always)]
 pub unsafe fn lean_ptr_other(o: *const lean_object) -> c_uint {
-    // Read m_other
-    (*raw_field!(o, lean_object, _bitfield_1)).get(16usize, 8u8) as c_uint
+    *raw_field!(o, lean_object, m_other) as c_uint
 }
 
 /// Whether an object is multi-threaded
@@ -439,8 +437,9 @@ pub unsafe fn lean_is_shared(o: *mut lean_object) -> bool {
 #[inline]
 pub unsafe fn lean_set_st_header(o: *mut lean_object, tag: c_uint, other: c_uint) {
     *lean_get_rc_mt_addr(o) = 1;
-    let bitfield = lean_object::new_bitfield_1(0, other, tag);
-    (raw_field!(o, lean_object, _bitfield_1) as *mut Bitfield<[u8; 4]>).write(bitfield);
+    (raw_field!(o, lean_object, m_cs_sz) as *mut u16).write(0);
+    (raw_field!(o, lean_object, m_other) as *mut u8).write(other as u8);
+    (raw_field!(o, lean_object, m_tag) as *mut u8).write(tag as u8);
 }
 
 /** Remark: we don't need a reference counter for objects that are not stored in the heap.
@@ -451,8 +450,9 @@ pub unsafe fn lean_set_non_heap_header(o: *mut lean_object, sz: usize, tag: c_ui
     debug_assert!(sz < (1 << 16));
     debug_assert!(sz == 1 || !lean_is_big_object_tag(tag as u8));
     *lean_get_rc_mt_addr(o) = 0;
-    let bitfield = lean_object::new_bitfield_1(sz as u32, other, tag);
-    (raw_field!(o, lean_object, _bitfield_1) as *mut Bitfield<[u8; 4]>).write(bitfield);
+    (raw_field!(o, lean_object, m_cs_sz) as *mut u16).write(sz as u16);
+    (raw_field!(o, lean_object, m_other) as *mut u8).write(other as u8);
+    (raw_field!(o, lean_object, m_tag) as *mut u8).write(tag as u8);
 }
 
 /** `lean_set_non_heap_header` for (potentially) big objects such as arrays and strings. */

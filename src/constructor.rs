@@ -54,12 +54,7 @@ pub unsafe fn lean_ctor_set(o: b_lean_obj_arg, i: c_uint, v: lean_obj_arg) {
 #[inline(always)]
 pub unsafe fn lean_ctor_set_tag(o: b_lean_obj_arg, new_tag: u8) {
     debug_assert!(new_tag <= LeanMaxCtorTag);
-    // Set m_tag to new_tag
-    (*(raw_field!(o, lean_object, _bitfield_1) as *mut Bitfield<[u8; 4]>)).set(
-        24usize,
-        8u8,
-        new_tag as u64,
-    )
+    (raw_field!(o, lean_object, m_tag) as *mut u8).write(new_tag as u8)
 }
 
 #[inline]
