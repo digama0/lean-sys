@@ -96,22 +96,34 @@ pub fn lean_uint16_modn(a1: u16, a2: b_lean_obj_arg) -> u16 {
 }
 
 #[inline(always)]
-pub fn lean_uint16_dec_eq(a1: u16, a2: u16) -> u16 { (a1 == a2) as u16 }
+pub fn lean_uint16_dec_eq(a1: u16, a2: u16) -> u16 {
+    (a1 == a2) as u16
+}
 
 #[inline(always)]
-pub fn lean_uint16_dec_lt(a1: u16, a2: u16) -> u16 { (a1 < a2) as u16 }
+pub fn lean_uint16_dec_lt(a1: u16, a2: u16) -> u16 {
+    (a1 < a2) as u16
+}
 
 #[inline(always)]
-pub fn lean_uint16_dec_le(a1: u16, a2: u16) -> u16 { (a1 <= a2) as u16 }
+pub fn lean_uint16_dec_le(a1: u16, a2: u16) -> u16 {
+    (a1 <= a2) as u16
+}
 
 #[inline]
-pub fn lean_uint16_to_uint8(a: u16) -> u8 { a as u8 }
+pub fn lean_uint16_to_uint8(a: u16) -> u8 {
+    a as u8
+}
 
 #[inline]
-pub fn lean_uint16_to_uint32(a: u16) -> u32 { a as u32 }
+pub fn lean_uint16_to_uint32(a: u16) -> u32 {
+    a as u32
+}
 
 #[inline]
-pub fn lean_uint16_to_uint64(a: u16) -> u64 { a as u64 }
+pub fn lean_uint16_to_uint64(a: u16) -> u64 {
+    a as u64
+}
 
 #[link(name = "leanshared")]
 extern "C" {

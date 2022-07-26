@@ -12,6 +12,3 @@ default = ["small_allocator"]
 libc = "0.2"
 memoffset = "0.6"
 static_assertions = "1.1.0"
-
-[profile.dev]
-rpath = true

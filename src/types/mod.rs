@@ -8,7 +8,6 @@ mod incomplete_array;
 pub use bitfield::*;
 pub use incomplete_array::*;
 
-
 /**
 Lean object header.
 
