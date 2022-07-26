@@ -194,3 +194,45 @@ extern "C" {
     pub fn lean_nat_gcd(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_log2(a: *mut lean_object) -> *mut lean_object;
 }
+
+#[cfg(test)]
+mod test {
+    use rand::{prelude::SliceRandom, Rng, SeedableRng};
+
+    use super::*;
+
+    unsafe fn slice_mul(s: &[u64]) -> *mut lean_object {
+        let r = s
+            .iter()
+            .map(|&x| lean_uint64_to_nat(x))
+            .fold(lean_uint64_to_nat(0), |a, b| lean_nat_mul(a, b));
+        assert!(lean_is_scalar(r) || lean_is_mpz(r));
+        r
+    }
+
+    #[test]
+    fn big_nat_multiplication_commutes_test() {
+        let mut rng = rand_xoshiro::Xoshiro256PlusPlus::seed_from_u64(0x568478687);
+        unsafe {
+            lean_initialize_runtime_module_locked();
+            let mut vec = Vec::with_capacity(100);
+            for _ in 0..10 {
+                for _ in 0..100 {
+                    vec.push(rng.gen::<u64>())
+                }
+                let r = slice_mul(&vec[..]);
+                const M: u64 = 595468;
+                let m = lean_nat_mod(r, lean_uint64_to_nat(M));
+                assert!(lean_is_scalar(m));
+                let p = vec.iter().copied().fold(1, |l: u64, r| l.wrapping_mul(r)) % M;
+                assert_eq!(lean_unbox(m) as u64, p);
+                for _ in 0..4 {
+                    vec.shuffle(&mut rng);
+                    assert!(lean_nat_eq(r, slice_mul(&vec[..])));
+                }
+
+                vec.clear();
+            }
+        }
+    }
+}
