@@ -3,6 +3,7 @@ name = "lean-sys"
 version = "0.1.0"
 edition = "2021"
 links = "leanshared"
+license = "MIT OR Apache-2.0"
 
 [features]
 small_allocator = []

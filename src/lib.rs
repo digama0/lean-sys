@@ -1,7 +1,7 @@
 /*!
-Low-level bindings for the Lean 4 interactive theorem prover.
+Low-level unsafe bindings for the Lean 4 interactive theorem prover.
 
-Functions manually translated from `lean.h`
+Functions and comments manually translated from those in the `lean.h` header provided with Lean 4
 */
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
