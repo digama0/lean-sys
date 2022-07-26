@@ -42,9 +42,6 @@ pub use task::*;
 pub use thunk::*;
 
 pub const LEAN_SMALL_ALLOCATOR: bool = cfg!(feature = "small_allocator");
-pub const LEAN_VERSION_MAJOR: u32 = 4;
-pub const LEAN_VERSION_MINOR: u32 = 0;
-pub const LEAN_VERSION_PATCH: u32 = 0;
 pub const LEAN_CLOSURE_MAX_ARGS: u32 = 16;
 pub const LEAN_OBJECT_SIZE_DELTA: usize = 8;
 pub const LEAN_MAX_SMALL_OBJECT_SIZE: u32 = 4096;
