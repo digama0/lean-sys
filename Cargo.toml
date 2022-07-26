@@ -1,9 +1,14 @@
 [package]
 name = "lean-sys"
 version = "0.1.0"
+authors = ["Jad Ghalayini <jeg74@cl.cam.ac.uk>"]
 edition = "2021"
-links = "leanshared"
+description = "Bindings to Lean 4's C API"
+repository = "https://gitlab.com/tekne/lean-sys"
 license = "MIT OR Apache-2.0"
+keywords = ["lean", "math", "bindings"]
+categories = ["external-ffi-bindings"]
+links = "leanshared"
 
 [features]
 small_allocator = []
