@@ -467,7 +467,7 @@ extern "C" {
     /// Enable/disable panic messages
     pub fn lean_set_panic_messages(flag: bool);
     pub fn lean_panic_fn(default_val: *mut lean_object, msg: *mut lean_object);
-    pub fn lean_internal_panic(msg: *const c_char) -> !;
+    pub fn lean_internal_panic(msg: *const u8) -> !;
     pub fn lean_internal_panic_out_of_memory() -> !;
     pub fn lean_internal_panic_unreachable() -> !;
     pub fn lean_internal_panic_rc_overflow() -> !;

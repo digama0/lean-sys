@@ -184,7 +184,7 @@ extern "C" {
     pub fn lean_nat_big_lor(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_big_xor(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
 
-    pub fn lean_cstr_to_nat(n: *const c_char) -> *mut lean_object;
+    pub fn lean_cstr_to_nat(n: *const u8) -> *mut lean_object;
     pub fn lean_big_usize_to_nat(n: usize) -> *mut lean_object;
     pub fn lean_big_uint64_to_nat(n: u64) -> *mut lean_object;
 

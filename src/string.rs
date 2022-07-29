@@ -29,7 +29,7 @@ pub fn lean_char_default_value() -> c_char {
 }
 
 #[inline(always)]
-pub unsafe fn lean_string_cstr(o: b_lean_obj_arg) -> *const c_char {
+pub unsafe fn lean_string_cstr(o: b_lean_obj_arg) -> *const u8 {
     debug_assert!(lean_is_string(o));
     raw_field!(lean_to_string(o), lean_string_object, m_data) as *const _
 }
@@ -81,10 +81,10 @@ pub unsafe fn lean_string_dec_lt(s1: b_lean_obj_arg, s2: b_lean_obj_arg) -> u8 {
 
 #[link(name = "leanshared")]
 extern "C" {
-    pub fn lean_utf8_strlen(str: *const c_char) -> usize;
-    pub fn lean_utf8_n_strlen(str: *const c_char, n: usize) -> usize;
-    pub fn lean_mk_string_from_bytes(s: *const c_char, sz: usize) -> lean_obj_res;
-    pub fn lean_mk_string(s: *const c_char) -> lean_obj_res;
+    pub fn lean_utf8_strlen(str: *const u8) -> usize;
+    pub fn lean_utf8_n_strlen(str: *const u8, n: usize) -> usize;
+    pub fn lean_mk_string_from_bytes(s: *const u8, sz: usize) -> lean_obj_res;
+    pub fn lean_mk_string(s: *const u8) -> lean_obj_res;
     pub fn lean_string_push(s: lean_obj_arg, c: u32) -> lean_obj_res;
     pub fn lean_string_append(s1: lean_obj_arg, s2: lean_obj_arg) -> lean_obj_res;
     pub fn lean_string_mk(cs: lean_obj_arg) -> lean_obj_res;
