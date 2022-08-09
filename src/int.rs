@@ -218,7 +218,7 @@ extern "C" {
     pub fn lean_int_big_lt(a1: *mut lean_object, a2: *mut lean_object) -> bool;
     pub fn lean_int_big_nonneg(a: *mut lean_object) -> bool;
 
-    pub fn lean_cstr_to_int(n: *const c_char) -> *mut lean_object;
+    pub fn lean_cstr_to_int(n: *const u8) -> *mut lean_object;
     pub fn lean_big_int_to_int(n: c_int) -> *mut lean_object;
     pub fn lean_big_size_t_to_int(n: usize) -> *mut lean_object;
     pub fn lean_big_int64_to_int(n: i64) -> *mut lean_object;
