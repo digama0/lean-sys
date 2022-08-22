@@ -2,6 +2,13 @@ use std::path::PathBuf;
 use std::process::Command;
 
 fn main() {
+    if let Ok(docs_rs) = std::env::var("DOCS_RS") {
+        // Detected build on `docs.rs`, so skip trying to link in Lean and just build docs
+        if docs_rs == "1" {
+            return
+        }
+    }
+
     // Step 1: Get lean directory
     // TODO: support overriding lean command and/or directory via environment variables?
     let lean_output = Command::new("lean")

@@ -1,0 +1,8 @@
+# 0.0.2
+
+- Fiddled with types to be a bit more Rust-friendly
+- Fixed documentation builds on `docs.rs`
+
+# 0.0.1
+
+Initial release
