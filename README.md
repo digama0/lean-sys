@@ -1,6 +1,6 @@
 # lean-sys
-![crates.io](https://img.shields.io/crates/v/lean-sys)
-![docs.rs](https://img.shields.io/docsrs/lean-sys)
+[![crates.io](https://img.shields.io/crates/v/lean-sys)](https://crates.io/crates/lean-sys)
+[![docs.rs](https://img.shields.io/docsrs/lean-sys)](https://docs.rs/crate/lean-sys/latest)
 
 Rust bindings to [Lean 4](https://github.com/leanprover/lean4)'s C API
 
