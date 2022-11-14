@@ -133,32 +133,38 @@ creation:
 * Task.spawn ==> Queued
 * Task.map/bind ==> Waiting
 * Task.pure ==> Finished
+* Promise.new ==> Promised
 
 states:
 * Queued
-  * condition: in task_manager::m_queues && m_imp != nullptr && !m_imp->m_deleted
-  * invariant: m_value == nullptr
+  * condition: in `task_manager::m_queues && m_imp != nullptr && !m_imp->m_deleted`
+  * invariant: `m_value == nullptr`
   * transition: RC becomes 0 ==> Deactivated (`deactivate_task` lock)
   * transition: dequeued by worker thread            ==> Running     (`spawn_worker` lock)
 * Waiting
-  * condition: reachable from task via `m_head_dep->m_next_dep->...` && !m_imp->m_deleted
-  * invariant: m_imp != nullptr && m_value == nullptr
+  * condition: reachable from task via `m_head_dep->m_next_dep->... && !m_imp->m_deleted`
+  * invariant: `m_imp != nullptr && m_value == nullptr`
   * invariant: task dependency is Queued/Waiting/Running
     * It cannot become Deactivated because this task should be holding an owned reference to it
   * transition: RC becomes 0 ==> Deactivated (`deactivate_task` lock)
   * transition: task dependency Finished ==> Queued (`handle_finished` under `spawn_worker` lock)
+* Promised
+  * condition: obtained as result from promise
+  * invariant: `m_imp != nullptr && m_value == nullptr`
+  * transition: promise resolved ==> Finished (`resolve_core` under `spawn_worker` lock)
+  * transition: RC becomes 0 ==> Deactivated (`deactivate_task` lock)
 * Running
-  * condition: m_imp != nullptr && m_imp->m_closure == nullptr
+  * condition: `m_imp != nullptr && m_imp->m_closure == nullptr`
     * The worker takes ownership of the closure when running it
-  * invariant: m_value == nullptr
+  * invariant: `m_value == nullptr`
   * transition: RC becomes 0 ==> Deactivated (`deactivate_task` lock)
   * transition: finished execution                   ==> Finished    (`spawn_worker` lock)
 * Deactivated
-  * condition: m_imp != nullptr && m_imp->m_deleted
-  * invariant: RC == 0
-  * invariant: m_imp->m_closure == nullptr && m_imp->m_head_dep == nullptr (both freed by `deactivate_task_core`)
+  * condition: `m_imp != nullptr && m_imp->m_deleted`
+  * invariant: `RC == 0`
+  * invariant: `m_imp->m_closure == nullptr && m_imp->m_head_dep == nullptr` (both freed by `deactivate_task_core`)
     * Note that all dependent tasks must have already been Deactivated by the converse of the second Waiting invariant
-  * invariant: m_value == nullptr
+  * invariant: `m_value == nullptr`
   * transition: dequeued by worker thread   ==> freed
   * transition: finished execution          ==> freed
   * transition: task dependency Finished    ==> freed
@@ -166,9 +172,10 @@ states:
     (internal, unowned) references to the task up to that point
   * transition: task dependency Deactivated ==> freed
 * Finished
-  * condition: m_value != nullptr
-  * invariant: m_imp == nullptr
-  * transition: RC becomes 0 ==> freed (`deactivate_task` lock) */
+  * condition: `m_value != nullptr`
+  * invariant: `m_imp == nullptr`
+  * transition: RC becomes 0 ==> freed (`deactivate_task` lock) 
+*/
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct lean_task {

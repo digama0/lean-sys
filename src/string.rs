@@ -79,6 +79,30 @@ pub unsafe fn lean_string_dec_lt(s1: b_lean_obj_arg, s2: b_lean_obj_arg) -> u8 {
     lean_string_lt(s1, s2) as u8
 }
 
+#[inline(always)]
+pub unsafe fn lean_string_utf8_get_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) -> u32 {
+    let st = lean_string_cstr(s);
+    let idx = lean_unbox(i);
+    let c = *st.add(idx) as u8;
+    if c & 0x80 == 0 {
+        c as u32
+    } else {
+        lean_string_utf8_get_fast_cold(st, idx, lean_string_size(s), c)
+    }
+}
+
+#[inline(always)]
+pub unsafe fn lean_string_utf8_next_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) -> lean_obj_res {
+    let s = lean_string_cstr(s);
+    let idx = lean_unbox(i);
+    let c = *s.add(idx) as u8;
+    if c & 0x80 == 0 {
+        lean_box(idx + 1)
+    } else {
+        lean_string_utf8_next_fast_cold(idx, c)
+    }
+}
+
 #[link(name = "leanshared")]
 extern "C" {
     pub fn lean_utf8_strlen(str: *const u8) -> usize;
@@ -90,7 +114,9 @@ extern "C" {
     pub fn lean_string_mk(cs: lean_obj_arg) -> lean_obj_res;
     pub fn lean_string_data(s: lean_obj_arg) -> lean_obj_res;
     pub fn lean_string_utf8_get(s: b_lean_obj_arg, i: b_lean_obj_arg) -> u32;
+    pub fn lean_string_utf8_get_fast_cold(s: *const u8, i: usize, size: usize, c: u8) -> u32;
     pub fn lean_string_utf8_next(s: b_lean_obj_arg, i: b_lean_obj_arg) -> lean_obj_res;
+    pub fn lean_string_utf8_next_fast_cold(i: usize, c: u8) -> lean_obj_res;
     pub fn lean_string_utf8_prev(s: b_lean_obj_arg, i: b_lean_obj_arg) -> lean_obj_res;
     pub fn lean_string_utf8_set(s: lean_obj_arg, i: b_lean_obj_arg, c: u32) -> lean_obj_res;
     pub fn lean_string_utf8_extract(
