@@ -1,6 +1,6 @@
 [package]
 name = "lean-sys"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Jad Ghalayini <jeg74@cl.cam.ac.uk>"]
 edition = "2021"
 description = "Bindings to Lean 4's C API"
@@ -16,7 +16,7 @@ default = ["small_allocator"]
 
 [dependencies]
 libc = "0.2"
-memoffset = "0.6"
+memoffset = "0.7"
 static_assertions = "1.1.0"
 parking_lot = "0.12"
 

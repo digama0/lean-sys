@@ -1,7 +1,19 @@
+# 0.0.3
+
+- Updated to match latest lean.h
+    * Added `String.next'` ([92c03c0](https://github.com/leanprover/lean4/commit/92c03c0050f0ae5f94d07501a158e911a4864eb0))
+    * Added `String.get'` ([20eeb42](https://github.com/leanprover/lean4/commit/20eeb4202f1aa95a789c85d5822700503c80d007) w/ bugfix [4f07c46](https://github.com/leanprover/lean4/commit/4f07c4695648c3151d3c49e7ab957620ef8ffe2a))
+    * Added `Promise` ([c2f1e01](https://github.com/leanprover/lean4/commit/c2f1e01b3b17e99939a9c2e5d7b5aef8e5253d27))
+    * Added more float functions ([9de477e](https://github.com/leanprover/lean4/commit/9de477ecf9f590a8c02acabf0cdbf4d68fa19486))
+    * Documented saturating float casts ([d8c6c82](https://github.com/leanprover/lean4/commit/d8c6c827fefc8dfcc83ae7c5793a5d1bc808ec0a))
+    * Removed dead fixpoint code (BREAKING [f9f074d](https://github.com/leanprover/lean4/commit/f9f074dbf5a04b755d88f3f63397889c1e8d3677))
+- Bumped [`memoffset`](https://crates.io/crates/memoffset) dependency to `0.7`
+- Added links to things
+
 # 0.0.2
 
 - Fiddled with types to be a bit more Rust-friendly
-- Fixed documentation builds on `docs.rs`
+- Fixed documentation builds on [`docs.rs`](https://docs.rs/)
 
 # 0.0.1
 
