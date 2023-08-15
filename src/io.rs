@@ -3,7 +3,7 @@
 use crate::*;
 
 #[inline(always)]
-pub unsafe fn lean_io_mk_world() -> lean_obj_res {
+pub const fn lean_io_mk_world() -> lean_obj_res {
     lean_box(0)
 }
 
@@ -45,7 +45,6 @@ pub unsafe fn lean_io_result_mk_error(a: lean_obj_arg) -> lean_obj_res {
     r
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_decode_io_error(errnum: c_int, fname: b_lean_obj_arg) -> lean_obj_res;
 
@@ -53,25 +52,53 @@ extern "C" {
     pub fn lean_io_mark_end_initialization();
 
     pub fn lean_mk_io_error_already_exists(_: u32, _: lean_obj_arg) -> lean_obj_res;
-    pub fn lean_mk_io_error_already_exists_file(_: lean_obj_arg, _: u32, _: lean_obj_arg) -> lean_obj_res;
+    pub fn lean_mk_io_error_already_exists_file(
+        _: lean_obj_arg,
+        _: u32,
+        _: lean_obj_arg,
+    ) -> lean_obj_res;
     pub fn lean_mk_io_error_eof(_: lean_obj_arg) -> lean_obj_res;
     pub fn lean_mk_io_error_hardware_fault(_: u32, _: lean_obj_arg) -> lean_obj_res;
     pub fn lean_mk_io_error_illegal_operation(_: u32, _: lean_obj_arg) -> lean_obj_res;
     pub fn lean_mk_io_error_inappropriate_type(_: u32, _: lean_obj_arg) -> lean_obj_res;
-    pub fn lean_mk_io_error_inappropriate_type_file(_: lean_obj_arg, _: u32, _: lean_obj_arg) -> lean_obj_res;
+    pub fn lean_mk_io_error_inappropriate_type_file(
+        _: lean_obj_arg,
+        _: u32,
+        _: lean_obj_arg,
+    ) -> lean_obj_res;
     pub fn lean_mk_io_error_interrupted(_: lean_obj_arg, _: u32, _: lean_obj_arg) -> lean_obj_res;
     pub fn lean_mk_io_error_invalid_argument(_: u32, _: lean_obj_arg) -> lean_obj_res;
-    pub fn lean_mk_io_error_invalid_argument_file(_: lean_obj_arg, _: u32, _: lean_obj_arg) -> lean_obj_res;
-    pub fn lean_mk_io_error_no_file_or_directory(_: lean_obj_arg, _: u32, _: lean_obj_arg) -> lean_obj_res;
+    pub fn lean_mk_io_error_invalid_argument_file(
+        _: lean_obj_arg,
+        _: u32,
+        _: lean_obj_arg,
+    ) -> lean_obj_res;
+    pub fn lean_mk_io_error_no_file_or_directory(
+        _: lean_obj_arg,
+        _: u32,
+        _: lean_obj_arg,
+    ) -> lean_obj_res;
     pub fn lean_mk_io_error_no_such_thing(_: u32, _: lean_obj_arg) -> lean_obj_res;
-    pub fn lean_mk_io_error_no_such_thing_file(_: lean_obj_arg, _: u32, _: lean_obj_arg) -> lean_obj_res;
+    pub fn lean_mk_io_error_no_such_thing_file(
+        _: lean_obj_arg,
+        _: u32,
+        _: lean_obj_arg,
+    ) -> lean_obj_res;
     pub fn lean_mk_io_error_other_error(_: u32, _: lean_obj_arg) -> lean_obj_res;
     pub fn lean_mk_io_error_permission_denied(_: u32, _: lean_obj_arg) -> lean_obj_res;
-    pub fn lean_mk_io_error_permission_denied_file(_: lean_obj_arg, _: u32, _: lean_obj_arg) -> lean_obj_res;
+    pub fn lean_mk_io_error_permission_denied_file(
+        _: lean_obj_arg,
+        _: u32,
+        _: lean_obj_arg,
+    ) -> lean_obj_res;
     pub fn lean_mk_io_error_protocol_error(_: u32, _: lean_obj_arg) -> lean_obj_res;
     pub fn lean_mk_io_error_resource_busy(_: u32, _: lean_obj_arg) -> lean_obj_res;
     pub fn lean_mk_io_error_resource_exhausted(_: u32, _: lean_obj_arg) -> lean_obj_res;
-    pub fn lean_mk_io_error_resource_exhausted_file(_: lean_obj_arg, _: u32, _: lean_obj_arg) -> lean_obj_res;
+    pub fn lean_mk_io_error_resource_exhausted_file(
+        _: lean_obj_arg,
+        _: u32,
+        _: lean_obj_arg,
+    ) -> lean_obj_res;
     pub fn lean_mk_io_error_resource_vanished(_: u32, _: lean_obj_arg) -> lean_obj_res;
     pub fn lean_mk_io_error_time_expired(_: u32, _: lean_obj_arg) -> lean_obj_res;
     pub fn lean_mk_io_error_unsatisfied_constraints(_: u32, _: lean_obj_arg) -> lean_obj_res;

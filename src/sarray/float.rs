@@ -84,7 +84,6 @@ pub unsafe fn lean_float_array_fset(
     lean_float_array_uset(a, lean_unbox(i), v)
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_float_array_mk(a: lean_obj_arg) -> lean_obj_res;
     pub fn lean_float_array_data(a: lean_obj_arg) -> lean_obj_res;

@@ -71,12 +71,12 @@ pub fn lean_uint32_xor(a1: u32, a2: u32) -> u32 {
 
 #[inline(always)]
 pub fn lean_uint32_shift_left(a1: u32, a2: u32) -> u32 {
-    a1.wrapping_shl(a2 as u32)
+    a1.wrapping_shl(a2)
 }
 
 #[inline(always)]
 pub fn lean_uint32_shift_right(a1: u32, a2: u32) -> u32 {
-    a1.wrapping_shr(a2 as u32)
+    a1.wrapping_shr(a2)
 }
 
 #[inline(always)]
@@ -132,7 +132,6 @@ pub fn lean_uint32_to_usize(a: u32) -> usize {
     a as usize
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_uint32_of_big_nat(a: b_lean_obj_arg) -> u32;
     pub fn lean_uint32_big_modn(a1: u32, a2: b_lean_obj_arg) -> u32;

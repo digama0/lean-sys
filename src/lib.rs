@@ -6,6 +6,8 @@ Functions and comments manually translated from those in the [`lean.h` header](h
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
+#![allow(clippy::missing_safety_doc)]
+
 use memoffset::raw_field;
 use static_assertions::const_assert;
 use std::os::raw::*;
@@ -116,7 +118,7 @@ pub fn lean_is_scalar(obj: *const lean_object) -> bool {
 /// }
 /// ```
 #[inline(always)]
-pub fn lean_box(n: usize) -> *mut lean_object {
+pub const fn lean_box(n: usize) -> *mut lean_object {
     ((n << 1) | 1) as *mut lean_object
 }
 
@@ -129,17 +131,14 @@ pub fn lean_unbox(o: *const lean_object) -> usize {
 }
 
 #[inline]
-pub fn lean_align(v: usize, a: usize) -> usize {
+pub const fn lean_align(v: usize, a: usize) -> usize {
     (v / a).wrapping_mul(a) + a.wrapping_mul((v % a != 0) as usize)
 }
 
 #[inline]
 pub fn lean_get_slot_idx(sz: c_uint) -> c_uint {
     debug_assert_ne!(sz, 0);
-    debug_assert_eq!(
-        lean_align(sz as usize, LEAN_OBJECT_SIZE_DELTA as usize),
-        sz as usize
-    );
+    debug_assert_eq!(lean_align(sz as usize, LEAN_OBJECT_SIZE_DELTA), sz as usize);
     sz / ((LEAN_OBJECT_SIZE_DELTA as c_uint) - 1)
 }
 
@@ -208,7 +207,7 @@ pub unsafe fn lean_free_small_object(o: *mut lean_object) {
 
 #[inline(always)]
 pub unsafe fn lean_ptr_tag(o: *const lean_object) -> u8 {
-    *raw_field!(o, lean_object, m_tag) as u8
+    *raw_field!(o, lean_object, m_tag)
 }
 
 #[inline(always)]
@@ -255,7 +254,7 @@ pub unsafe fn lean_get_rc_mt_addr(o: *mut lean_object) -> *mut c_int {
 pub unsafe fn lean_inc_ref(o: *mut lean_object) {
     if lean_is_st(o) {
         *(raw_field!(o, lean_object, m_rc) as *mut c_int) += 1
-    } else {
+    } else if *raw_field!(o, lean_object, m_rc) != 0 {
         lean_inc_ref_cold(o)
     }
 }
@@ -264,7 +263,7 @@ pub unsafe fn lean_inc_ref(o: *mut lean_object) {
 pub unsafe fn lean_inc_ref_n(o: *mut lean_object, n: usize) {
     if lean_is_st(o) {
         *(raw_field!(o, lean_object, m_rc) as *mut c_int) += n as c_int
-    } else {
+    } else if *raw_field!(o, lean_object, m_rc) != 0 {
         lean_inc_ref_n_cold(o, n as c_uint)
     }
 }
@@ -273,29 +272,29 @@ pub unsafe fn lean_inc_ref_n(o: *mut lean_object, n: usize) {
 pub unsafe fn lean_dec_ref(o: *mut lean_object) {
     if relaxed_rc_load(o) > 1 {
         *(raw_field!(o, lean_object, m_rc) as *mut c_int) -= 1
-    } else {
+    } else if *raw_field!(o, lean_object, m_rc) != 0 {
         lean_dec_ref_cold(o)
     }
 }
 
 #[inline]
-pub fn lean_inc(o: *mut lean_object) {
+pub unsafe fn lean_inc(o: *mut lean_object) {
     if !lean_is_scalar(o) {
-        lean_inc(o)
+        lean_inc_ref(o)
     }
 }
 
 #[inline]
-pub fn lean_inc_n(o: *mut lean_object, n: usize) {
+pub unsafe fn lean_inc_n(o: *mut lean_object, n: usize) {
     if !lean_is_scalar(o) {
-        lean_inc_n(o, n)
+        lean_inc_ref_n(o, n)
     }
 }
 
 #[inline]
-pub fn lean_dec(o: *mut lean_object) {
+pub unsafe fn lean_dec(o: *mut lean_object) {
     if !lean_is_scalar(o) {
-        lean_dec(o)
+        lean_dec_ref(o)
     }
 }
 
@@ -459,7 +458,6 @@ pub unsafe fn lean_set_non_heap_header_for_big(o: *mut lean_object, tag: c_uint,
     lean_set_non_heap_header(o, 1, tag, other)
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_set_exit_on_panic(flag: bool);
     /// Enable/disable panic messages

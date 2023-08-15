@@ -33,7 +33,7 @@ pub unsafe fn lean_alloc_closure(
         std::mem::size_of::<lean_closure_object>() as c_uint
             + std::mem::size_of::<*const ()>() as c_uint * num_fixed,
     );
-    lean_set_st_header(o as *mut lean_object, LeanClosure as u32, 0);
+    lean_set_st_header(o, LeanClosure as u32, 0);
     (raw_field!(o, lean_closure_object, m_fun) as *mut *mut c_void).write(fun);
     (raw_field!(o, lean_closure_object, m_arity) as *mut u16).write(arity as u16);
     (raw_field!(o, lean_closure_object, m_num_fixed) as *mut u16).write(num_fixed as u16);
@@ -56,7 +56,6 @@ pub unsafe fn lean_closure_set(o: u_lean_obj_arg, i: c_uint, a: lean_obj_arg) {
         .write(a)
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_apply_1(f: *mut lean_object, a1: *mut lean_object) -> *mut lean_object;
     pub fn lean_apply_2(

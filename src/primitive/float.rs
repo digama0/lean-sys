@@ -48,7 +48,6 @@ pub fn lean_uint64_to_float(a: u64) -> f64 {
     a as f64
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_float_to_string(a: f64) -> lean_obj_res;
     pub fn lean_float_scaleb(a: f64, b: b_lean_obj_arg) -> f64;

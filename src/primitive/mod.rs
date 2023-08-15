@@ -3,15 +3,15 @@ Primitive operations
 */
 use crate::*;
 
-pub mod boxing;
-pub mod float;
-pub mod name;
-pub mod st;
-pub mod uint16;
-pub mod uint32;
-pub mod uint64;
-pub mod uint8;
-pub mod usize_;
+mod boxing;
+mod float;
+mod name;
+mod st;
+mod uint16;
+mod uint32;
+mod uint64;
+mod uint8;
+mod usize_;
 pub use boxing::*;
 pub use float::*;
 pub use name::*;

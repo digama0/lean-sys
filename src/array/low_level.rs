@@ -56,7 +56,6 @@ pub unsafe fn lean_array_set_core(o: u_lean_obj_arg, i: usize, v: lean_obj_arg) 
         .write(v)
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_array_mk(l: lean_obj_arg) -> *mut lean_object;
     pub fn lean_array_data(a: lean_obj_arg) -> *mut lean_object;

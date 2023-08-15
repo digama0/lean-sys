@@ -1,7 +1,6 @@
 /*! Name primitives */
 use crate::*;
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_name_eq(n1: b_lean_obj_arg, n2: b_lean_obj_arg) -> bool;
 }

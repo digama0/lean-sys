@@ -125,7 +125,6 @@ pub fn lean_uint16_to_uint64(a: u16) -> u64 {
     a as u64
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_uint16_of_big_nat(a: b_lean_obj_arg) -> u16;
 }

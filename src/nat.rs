@@ -168,7 +168,6 @@ pub unsafe fn lean_nat_lxor(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_
     }
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_nat_big_succ(a: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_big_add(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;

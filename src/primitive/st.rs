@@ -1,7 +1,6 @@
 /*! ST Ref primitives */
 use crate::*;
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_st_mk_ref(_: lean_obj_arg, _: lean_obj_arg) -> lean_obj_res;
     pub fn lean_st_mk_ref_get(_: b_lean_obj_arg, _: lean_obj_arg) -> lean_obj_res;

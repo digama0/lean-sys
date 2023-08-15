@@ -71,7 +71,6 @@ pub unsafe fn lean_byte_array_fset(a: lean_obj_arg, i: b_lean_obj_arg, v: u8) ->
     lean_byte_array_uset(a, lean_unbox(i), v)
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_byte_array_mk(a: lean_obj_arg) -> lean_obj_res;
     pub fn lean_byte_array_data(a: lean_obj_arg) -> lean_obj_res;

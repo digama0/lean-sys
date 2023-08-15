@@ -4,7 +4,7 @@ use crate::*;
 #[inline]
 pub unsafe fn lean_mk_thunk(c: lean_obj_arg) -> lean_obj_res {
     let o = lean_alloc_small_object(std::mem::size_of::<lean_thunk_object>() as c_uint);
-    lean_set_st_header(o as *mut lean_object, LeanThunk as u32, 0);
+    lean_set_st_header(o, LeanThunk as u32, 0);
     (raw_field!(o, lean_thunk_object, m_value) as *mut *mut lean_object)
         .write(std::ptr::null_mut());
     (raw_field!(o, lean_thunk_object, m_closure) as *mut lean_obj_arg).write(c);
@@ -15,13 +15,12 @@ pub unsafe fn lean_mk_thunk(c: lean_obj_arg) -> lean_obj_res {
 #[inline]
 pub unsafe fn lean_obj_res(v: lean_obj_arg) -> lean_obj_res {
     let o = lean_alloc_small_object(std::mem::size_of::<lean_thunk_object>() as c_uint);
-    lean_set_st_header(o as *mut lean_object, LeanThunk as u32, 0);
+    lean_set_st_header(o, LeanThunk as u32, 0);
     (raw_field!(o, lean_thunk_object, m_value) as *mut lean_obj_arg).write(v);
     (raw_field!(o, lean_thunk_object, m_closure) as *mut lean_obj_arg).write(std::ptr::null_mut());
     o
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_thunk_get_core(t: *mut lean_object) -> *mut lean_object;
 }

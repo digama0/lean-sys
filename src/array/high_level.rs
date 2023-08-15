@@ -155,7 +155,6 @@ pub unsafe fn lean_array_swap(
     }
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_array_get_panic(def_val: lean_obj_arg) -> lean_obj_res;
     pub fn lean_copy_expand_array(a: lean_obj_arg, expand: bool) -> lean_obj_res;

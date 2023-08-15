@@ -120,11 +120,10 @@ pub fn lean_uint64_to_uint32(a: u64) -> u32 {
 }
 
 #[inline]
-pub fn lean_uint64_to_uint64(a: u64) -> u64 {
-    a as u64
+pub fn lean_uint64_to_usize(a: u64) -> usize {
+    a as usize
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_uint64_of_big_nat(a: b_lean_obj_arg) -> u64;
     pub fn lean_uint64_big_modn(a1: u64, a2: b_lean_obj_arg) -> u64;

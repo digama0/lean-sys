@@ -83,7 +83,7 @@ pub unsafe fn lean_string_dec_lt(s1: b_lean_obj_arg, s2: b_lean_obj_arg) -> u8 {
 pub unsafe fn lean_string_utf8_get_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) -> u32 {
     let st = lean_string_cstr(s);
     let idx = lean_unbox(i);
-    let c = *st.add(idx) as u8;
+    let c = *st.add(idx);
     if c & 0x80 == 0 {
         c as u32
     } else {
@@ -95,7 +95,7 @@ pub unsafe fn lean_string_utf8_get_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) ->
 pub unsafe fn lean_string_utf8_next_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) -> lean_obj_res {
     let s = lean_string_cstr(s);
     let idx = lean_unbox(i);
-    let c = *s.add(idx) as u8;
+    let c = *s.add(idx);
     if c & 0x80 == 0 {
         lean_box(idx + 1)
     } else {
@@ -103,7 +103,6 @@ pub unsafe fn lean_string_utf8_next_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) -
     }
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_utf8_strlen(str: *const u8) -> usize;
     pub fn lean_utf8_n_strlen(str: *const u8, n: usize) -> usize;

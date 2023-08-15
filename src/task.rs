@@ -28,7 +28,6 @@ pub unsafe fn lean_task_get_own(t: b_lean_obj_arg) -> lean_obj_res {
     r
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_init_task_manager();
     pub fn lean_init_task_manager_using(num_workers: c_uint);

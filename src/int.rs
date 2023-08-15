@@ -14,6 +14,7 @@ pub const LEAN_MIN_SMALL_INT: c_int = if std::mem::size_of::<*const ()>() == 8 {
 
 #[inline]
 pub unsafe fn lean_int_to_int(n: c_int) -> lean_obj_res {
+    #[allow(clippy::absurd_extreme_comparisons, clippy::manual_range_contains)]
     if n <= LEAN_MAX_SMALL_INT && n >= LEAN_MIN_SMALL_INT {
         lean_box(n as usize)
     } else {
@@ -205,7 +206,6 @@ pub unsafe fn lean_int_dec_nonneg(a: b_lean_obj_arg) -> u8 {
     }) as u8
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_int_big_neg(a: *mut lean_object) -> *mut lean_object;
     pub fn lean_int_big_add(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;

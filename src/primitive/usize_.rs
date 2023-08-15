@@ -3,7 +3,7 @@ use crate::*;
 #[inline]
 pub unsafe fn lean_usize_of_nat(a: b_lean_obj_arg) -> usize {
     if lean_is_scalar(a) {
-        lean_unbox(a) as usize
+        lean_unbox(a)
     } else {
         lean_usize_of_big_nat(a)
     }
@@ -83,7 +83,7 @@ pub fn lean_usize_complement(a: usize) -> usize {
 pub unsafe fn lean_usize_modn(a1: usize, a2: b_lean_obj_arg) -> usize {
     if lean_is_scalar(a2) {
         //TODO: likely
-        lean_usize_mod(a1, lean_unbox(a2) as usize)
+        lean_usize_mod(a1, lean_unbox(a2))
     } else {
         lean_usize_big_modn(a1, a2)
     }
@@ -114,7 +114,6 @@ pub fn lean_usize_to_uint64(a: usize) -> u64 {
     a as u64
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_usize_of_big_nat(a: b_lean_obj_arg) -> usize;
     pub fn lean_usize_big_modn(a1: usize, a2: b_lean_obj_arg) -> usize;

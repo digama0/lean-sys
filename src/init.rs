@@ -52,7 +52,6 @@ pub unsafe fn lean_initialize_locked() {
     lean_initialize();
 }
 
-#[link(name = "leanshared")]
 extern "C" {
     pub fn lean_initialize_runtime_module();
     pub fn lean_initialize();
