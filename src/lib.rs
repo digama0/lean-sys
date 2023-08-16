@@ -14,6 +14,7 @@ use core::sync::atomic::{AtomicI32, AtomicI64, Ordering};
 use memoffset::raw_field;
 use static_assertions::const_assert;
 
+pub mod alloc;
 pub mod array;
 pub mod closure;
 pub mod constructor;
@@ -23,6 +24,7 @@ pub mod init;
 pub mod int;
 pub mod io;
 pub mod nat;
+pub mod panic;
 pub mod primitive;
 pub mod sarray;
 pub mod string;
