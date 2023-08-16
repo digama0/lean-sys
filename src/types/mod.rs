@@ -4,7 +4,7 @@ Comments adapted from `lean.h`.
 */
 
 mod incomplete_array;
-use std::ffi::{c_char, c_int, c_uint, c_void};
+use core::ffi::{c_char, c_int, c_uint, c_void};
 
 pub use incomplete_array::*;
 

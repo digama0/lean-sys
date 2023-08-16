@@ -4,7 +4,7 @@ use crate::*;
 #[inline]
 pub unsafe fn lean_alloc_array(size: usize, capacity: usize) -> *mut lean_object {
     let o = lean_alloc_object(
-        std::mem::size_of::<lean_array_object>() + std::mem::size_of::<*mut ()>() * capacity,
+        core::mem::size_of::<lean_array_object>() + core::mem::size_of::<*mut ()>() * capacity,
     );
     lean_set_st_header(o as *mut _, LeanArray as u32, 0);
     (raw_field!(o, lean_array_object, m_size) as *mut usize).write(size);
@@ -24,8 +24,8 @@ pub unsafe fn lean_array_capacity(o: b_lean_obj_arg) -> usize {
 
 #[inline]
 pub unsafe fn lean_array_byte_size(o: b_lean_obj_arg) -> usize {
-    std::mem::size_of::<lean_array_object>()
-        + std::mem::size_of::<*mut ()>() * lean_array_capacity(o)
+    core::mem::size_of::<lean_array_object>()
+        + core::mem::size_of::<*mut ()>() * lean_array_capacity(o)
 }
 
 #[inline(always)]

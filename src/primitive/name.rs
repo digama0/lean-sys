@@ -8,7 +8,7 @@ extern "C" {
 #[inline(always)]
 pub unsafe fn lean_name_hash_ptr(n: b_lean_obj_arg) -> u64 {
     debug_assert!(!lean_is_scalar(n));
-    lean_ctor_get_uint64(n, (std::mem::size_of::<*mut lean_object>() * 2) as u32)
+    lean_ctor_get_uint64(n, (core::mem::size_of::<*mut lean_object>() * 2) as u32)
 }
 
 #[inline]

@@ -3,7 +3,7 @@ use crate::*;
 
 #[inline(always)]
 pub unsafe fn lean_alloc_string(size: usize, capacity: usize, len: usize) -> lean_obj_res {
-    let o = lean_alloc_object(std::mem::size_of::<lean_string_object>() + capacity)
+    let o = lean_alloc_object(core::mem::size_of::<lean_string_object>() + capacity)
         as *mut lean_string_object;
     lean_set_st_header(o as *mut _, LeanString as u32, 0);
     (raw_field!(o, lean_string_object, m_size) as *mut usize).write(size);
@@ -19,7 +19,7 @@ pub unsafe fn lean_string_capacity(o: *mut lean_object) -> usize {
 
 #[inline(always)]
 pub unsafe fn lean_string_byte_size(o: *mut lean_object) -> usize {
-    std::mem::size_of::<lean_string_object>() + lean_string_capacity(o)
+    core::mem::size_of::<lean_string_object>() + lean_string_capacity(o)
 }
 
 /** instance : inhabited char := ⟨'A'⟩ */

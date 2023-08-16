@@ -9,7 +9,7 @@ pub use float::*;
 #[inline]
 pub unsafe fn lean_alloc_sarray(elem_size: c_uint, size: usize, capacity: usize) -> lean_obj_res {
     let o = lean_alloc_object(
-        std::mem::size_of::<lean_sarray_object>() + (elem_size as usize) * capacity,
+        core::mem::size_of::<lean_sarray_object>() + (elem_size as usize) * capacity,
     ) as *mut lean_sarray_object;
     lean_set_st_header(o as *mut _, LeanScalarArray as u32, elem_size);
     (raw_field!(o, lean_sarray_object, m_size) as *mut usize).write(size);
@@ -30,7 +30,7 @@ pub unsafe fn lean_sarray_capacity(o: *const lean_object) -> usize {
 
 #[inline]
 pub unsafe fn lean_sarray_byte_size(o: *const lean_object) -> usize {
-    std::mem::size_of::<lean_sarray_object>()
+    core::mem::size_of::<lean_sarray_object>()
         + (lean_sarray_elem_size(o) as usize) * lean_sarray_capacity(o)
 }
 

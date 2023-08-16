@@ -3,10 +3,10 @@ use crate::*;
 
 #[inline]
 pub unsafe fn lean_mk_thunk(c: lean_obj_arg) -> lean_obj_res {
-    let o = lean_alloc_small_object(std::mem::size_of::<lean_thunk_object>() as c_uint);
+    let o = lean_alloc_small_object(core::mem::size_of::<lean_thunk_object>() as c_uint);
     lean_set_st_header(o, LeanThunk as u32, 0);
     (raw_field!(o, lean_thunk_object, m_value) as *mut *mut lean_object)
-        .write(std::ptr::null_mut());
+        .write(core::ptr::null_mut());
     (raw_field!(o, lean_thunk_object, m_closure) as *mut lean_obj_arg).write(c);
     o
 }
@@ -14,10 +14,10 @@ pub unsafe fn lean_mk_thunk(c: lean_obj_arg) -> lean_obj_res {
 /** Thunk.pure : A -> Thunk A */
 #[inline]
 pub unsafe fn lean_obj_res(v: lean_obj_arg) -> lean_obj_res {
-    let o = lean_alloc_small_object(std::mem::size_of::<lean_thunk_object>() as c_uint);
+    let o = lean_alloc_small_object(core::mem::size_of::<lean_thunk_object>() as c_uint);
     lean_set_st_header(o, LeanThunk as u32, 0);
     (raw_field!(o, lean_thunk_object, m_value) as *mut lean_obj_arg).write(v);
-    (raw_field!(o, lean_thunk_object, m_closure) as *mut lean_obj_arg).write(std::ptr::null_mut());
+    (raw_field!(o, lean_thunk_object, m_closure) as *mut lean_obj_arg).write(core::ptr::null_mut());
     o
 }
 

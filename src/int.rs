@@ -1,12 +1,12 @@
 /*! Integers */
 use crate::*;
 
-pub const LEAN_MAX_SMALL_INT: c_int = if std::mem::size_of::<*const ()>() == 8 {
+pub const LEAN_MAX_SMALL_INT: c_int = if core::mem::size_of::<*const ()>() == 8 {
     c_int::MAX
 } else {
     1 << 30
 };
-pub const LEAN_MIN_SMALL_INT: c_int = if std::mem::size_of::<*const ()>() == 8 {
+pub const LEAN_MIN_SMALL_INT: c_int = if core::mem::size_of::<*const ()>() == 8 {
     c_int::MIN
 } else {
     -(1 << 30)

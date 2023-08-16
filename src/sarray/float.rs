@@ -7,7 +7,7 @@ pub unsafe fn lean_mk_empty_float_array(capacity: b_lean_obj_arg) -> lean_obj_re
         lean_internal_panic_out_of_memory()
     }
     lean_alloc_sarray(
-        std::mem::size_of::<f64>() as c_uint,
+        core::mem::size_of::<f64>() as c_uint,
         0,
         lean_unbox(capacity),
     )

@@ -89,7 +89,7 @@ pub unsafe fn lean_uint32_modn(a1: u32, a2: b_lean_obj_arg) -> u32 {
     if lean_is_scalar(a2) {
         //TODO: likely
         lean_uint32_mod(a1, lean_unbox(a2) as u32)
-    } else if std::mem::size_of::<*const ()>() == 4 {
+    } else if core::mem::size_of::<*const ()>() == 4 {
         /* 32-bit */
         lean_uint32_big_modn(a1, a2)
     } else {
