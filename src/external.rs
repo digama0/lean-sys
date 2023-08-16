@@ -22,3 +22,10 @@ pub unsafe fn lean_get_external_class(o: *mut lean_object) -> *mut lean_external
 pub unsafe fn lean_get_external_data(o: *mut lean_object) -> *mut c_void {
     *raw_field!(lean_to_external(o), lean_external_object, m_data)
 }
+
+extern "C" {
+    pub fn lean_register_external_class(
+        _: lean_external_finalize_proc,
+        _: lean_external_foreach_proc,
+    ) -> *mut lean_external_class;
+}
