@@ -30,8 +30,8 @@ pub unsafe fn lean_alloc_closure(
     debug_assert!(arity > 0);
     debug_assert!(num_fixed < arity);
     let o = lean_alloc_small_object(
-        std::mem::size_of::<lean_closure_object>() as c_uint
-            + std::mem::size_of::<*const ()>() as c_uint * num_fixed,
+        core::mem::size_of::<lean_closure_object>() as c_uint
+            + core::mem::size_of::<*const ()>() as c_uint * num_fixed,
     );
     lean_set_st_header(o, LeanClosure as u32, 0);
     (raw_field!(o, lean_closure_object, m_fun) as *mut *mut c_void).write(fun);

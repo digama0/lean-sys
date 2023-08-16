@@ -7,11 +7,12 @@ Functions and comments manually translated from those in the [`lean.h` header](h
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
 #![allow(clippy::missing_safety_doc)]
+#![no_std]
 
+use core::ffi::*;
+use core::sync::atomic::{AtomicI32, AtomicI64, Ordering};
 use memoffset::raw_field;
 use static_assertions::const_assert;
-use std::os::raw::*;
-use std::sync::atomic::{AtomicI32, AtomicI64, Ordering};
 
 pub mod array;
 pub mod closure;
@@ -69,8 +70,8 @@ const_assert! {
 
 #[inline(always)]
 pub const fn layout_compat<A, B>() -> bool {
-    std::mem::size_of::<A>() == std::mem::size_of::<B>()
-        && std::mem::align_of::<A>() == std::mem::align_of::<B>()
+    core::mem::size_of::<A>() == core::mem::size_of::<B>()
+        && core::mem::align_of::<A>() == core::mem::align_of::<B>()
 }
 
 #[inline(always)]
@@ -151,7 +152,7 @@ pub unsafe fn lean_alloc_small_object(sz: c_uint) -> *mut lean_object {
         lean_alloc_small(sz, slot_idx) as *mut _
     } else {
         lean_inc_heartbeat();
-        let mem = libc::malloc(std::mem::size_of::<usize>() + sz as usize) as *mut usize;
+        let mem = libc::malloc(core::mem::size_of::<usize>() + sz as usize) as *mut usize;
         if mem.is_null() {
             lean_internal_panic_out_of_memory()
         }

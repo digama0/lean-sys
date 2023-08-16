@@ -123,7 +123,7 @@ pub unsafe fn lean_array_pop(a: lean_obj_arg) -> *mut lean_object {
 pub unsafe fn lean_array_uswap(a: lean_obj_arg, i: usize, j: usize) -> *mut lean_object {
     let r = lean_ensure_exclusive_array(a);
     let it = lean_array_cptr(r);
-    std::ptr::swap(it.add(i), it.add(j));
+    core::ptr::swap(it.add(i), it.add(j));
     r
 }
 

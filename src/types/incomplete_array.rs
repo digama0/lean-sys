@@ -1,6 +1,6 @@
 /*! Automatically generated incomplete array code from bindgen */
 
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 #[repr(C)]
 #[derive(Default)]
@@ -20,15 +20,15 @@ impl<T> IncompleteArrayField<T> {
     }
     #[inline]
     pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-        std::slice::from_raw_parts(self.as_ptr(), len)
+        core::slice::from_raw_parts(self.as_ptr(), len)
     }
     #[inline]
     pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-        std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+        core::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
     }
 }
-impl<T> std::fmt::Debug for IncompleteArrayField<T> {
-    fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl<T> core::fmt::Debug for IncompleteArrayField<T> {
+    fn fmt(&self, fmt: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         fmt.write_str("IncompleteArrayField")
     }
 }

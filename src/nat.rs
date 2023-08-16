@@ -196,6 +196,7 @@ extern "C" {
 
 #[cfg(test)]
 mod test {
+    extern crate std;
     use rand::{prelude::SliceRandom, Rng, SeedableRng};
 
     use super::*;
@@ -214,7 +215,7 @@ mod test {
         let mut rng = rand_xoshiro::Xoshiro256PlusPlus::seed_from_u64(0x568478687);
         unsafe {
             lean_initialize_runtime_module_locked();
-            let mut vec = Vec::with_capacity(100);
+            let mut vec = std::vec::Vec::with_capacity(100);
             for _ in 0..10 {
                 for _ in 0..100 {
                     vec.push(rng.gen::<u64>())

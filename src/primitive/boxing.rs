@@ -3,9 +3,9 @@ use crate::*;
 
 #[inline]
 pub unsafe fn lean_box_uint32(v: u32) -> lean_obj_res {
-    if std::mem::size_of::<*const ()>() == 4 {
+    if core::mem::size_of::<*const ()>() == 4 {
         // 32-bit implementation
-        let r = lean_alloc_ctor(0, 0, std::mem::size_of::<u32>() as c_uint);
+        let r = lean_alloc_ctor(0, 0, core::mem::size_of::<u32>() as c_uint);
         lean_ctor_set_uint32(r, 0, v);
         r
     } else {
@@ -16,7 +16,7 @@ pub unsafe fn lean_box_uint32(v: u32) -> lean_obj_res {
 
 #[inline]
 pub unsafe fn lean_unbox_uint32(o: b_lean_obj_arg) -> u32 {
-    if std::mem::size_of::<*const ()>() == 4 {
+    if core::mem::size_of::<*const ()>() == 4 {
         // 32-bit implementation
         lean_ctor_get_uint32(o, 0)
     } else {
@@ -27,7 +27,7 @@ pub unsafe fn lean_unbox_uint32(o: b_lean_obj_arg) -> u32 {
 
 #[inline]
 pub unsafe fn lean_box_uint64(v: u64) -> lean_obj_res {
-    let r = lean_alloc_ctor(0, 0, std::mem::size_of::<u64>() as c_uint);
+    let r = lean_alloc_ctor(0, 0, core::mem::size_of::<u64>() as c_uint);
     lean_ctor_set_uint64(r, 0, v);
     r
 }
@@ -39,7 +39,7 @@ pub unsafe fn lean_unbox_uint64(o: b_lean_obj_arg) -> u64 {
 
 #[inline]
 pub unsafe fn lean_box_usize(v: usize) -> lean_obj_res {
-    let r = lean_alloc_ctor(0, 0, std::mem::size_of::<usize>() as c_uint);
+    let r = lean_alloc_ctor(0, 0, core::mem::size_of::<usize>() as c_uint);
     lean_ctor_set_usize(r, 0, v);
     r
 }
@@ -51,7 +51,7 @@ pub unsafe fn lean_unbox_usize(o: b_lean_obj_arg) -> usize {
 
 #[inline]
 pub unsafe fn lean_box_float(v: f64) -> lean_obj_res {
-    let r = lean_alloc_ctor(0, 0, std::mem::size_of::<f64>() as c_uint);
+    let r = lean_alloc_ctor(0, 0, core::mem::size_of::<f64>() as c_uint);
     lean_ctor_set_float(r, 0, v);
     r
 }
