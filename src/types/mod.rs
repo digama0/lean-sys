@@ -4,6 +4,8 @@ Comments adapted from `lean.h`.
 */
 
 mod incomplete_array;
+use std::ffi::{c_char, c_int, c_uint, c_void};
+
 pub use incomplete_array::*;
 
 /**
@@ -25,7 +27,7 @@ The field `m_other` is used to store the number of fields in a constructor objec
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct lean_object {
-    pub m_rc: ::std::os::raw::c_int,
+    pub m_rc: c_int,
     pub m_cs_sz: u16,
     pub m_other: u8,
     pub m_tag: u8,
@@ -78,14 +80,14 @@ pub struct lean_string_object {
     pub m_capacity: usize,
     /// UTF-8 length
     pub m_length: usize,
-    pub m_data: IncompleteArrayField<::std::os::raw::c_char>,
+    pub m_data: IncompleteArrayField<c_char>,
 }
 
 #[repr(C)]
 #[derive(Debug)]
 pub struct lean_closure_object {
     pub m_header: lean_object,
-    pub m_fun: *mut ::std::os::raw::c_void,
+    pub m_fun: *mut c_void,
     /// Number of arguments expected by `m_fun`
     pub m_arity: u16,
     //TODO: already been fixed?
@@ -117,7 +119,7 @@ pub struct lean_task_imp {
     pub m_closure: *mut lean_object,
     pub m_head_dep: *mut lean_task,
     pub m_next_dep: *mut lean_task,
-    pub m_prio: ::std::os::raw::c_uint,
+    pub m_prio: c_uint,
     pub m_canceled: u8,
     /// If true, task will not be freed until finished
     pub m_keep_alive: u8,
@@ -174,7 +176,7 @@ states:
 * Finished
   * condition: `m_value != nullptr`
   * invariant: `m_imp == nullptr`
-  * transition: RC becomes 0 ==> freed (`deactivate_task` lock) 
+  * transition: RC becomes 0 ==> freed (`deactivate_task` lock)
 */
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -185,11 +187,9 @@ pub struct lean_task {
 }
 
 pub type lean_task_object = lean_task;
-pub type lean_external_finalize_proc =
-    ::std::option::Option<unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void)>;
-pub type lean_external_foreach_proc = ::std::option::Option<
-    unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void, arg2: b_lean_obj_arg),
->;
+pub type lean_external_finalize_proc = Option<unsafe extern "C" fn(arg1: *mut c_void)>;
+pub type lean_external_foreach_proc =
+    Option<unsafe extern "C" fn(arg1: *mut c_void, arg2: b_lean_obj_arg)>;
 
 /* Object for wrapping external data. */
 #[repr(C)]
@@ -204,5 +204,5 @@ pub struct lean_external_class {
 pub struct lean_external_object {
     pub m_header: lean_object,
     pub m_class: *mut lean_external_class,
-    pub m_data: *mut ::std::os::raw::c_void,
+    pub m_data: *mut c_void,
 }

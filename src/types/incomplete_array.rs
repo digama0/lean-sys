@@ -1,12 +1,14 @@
 /*! Automatically generated incomplete array code from bindgen */
 
+use std::marker::PhantomData;
+
 #[repr(C)]
 #[derive(Default)]
-pub struct IncompleteArrayField<T>(::std::marker::PhantomData<T>, [T; 0]);
+pub struct IncompleteArrayField<T>(PhantomData<T>, [T; 0]);
 impl<T> IncompleteArrayField<T> {
     #[inline]
     pub const fn new() -> Self {
-        IncompleteArrayField(::std::marker::PhantomData, [])
+        IncompleteArrayField(PhantomData, [])
     }
     #[inline]
     pub fn as_ptr(&self) -> *const T {
@@ -18,15 +20,15 @@ impl<T> IncompleteArrayField<T> {
     }
     #[inline]
     pub unsafe fn as_slice(&self, len: usize) -> &[T] {
-        ::std::slice::from_raw_parts(self.as_ptr(), len)
+        std::slice::from_raw_parts(self.as_ptr(), len)
     }
     #[inline]
     pub unsafe fn as_mut_slice(&mut self, len: usize) -> &mut [T] {
-        ::std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
+        std::slice::from_raw_parts_mut(self.as_mut_ptr(), len)
     }
 }
-impl<T> ::std::fmt::Debug for IncompleteArrayField<T> {
-    fn fmt(&self, fmt: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+impl<T> std::fmt::Debug for IncompleteArrayField<T> {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         fmt.write_str("IncompleteArrayField")
     }
 }
