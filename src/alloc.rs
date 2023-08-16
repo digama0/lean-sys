@@ -23,7 +23,7 @@ unsafe impl GlobalAlloc for LeanAlloc {
         let size = layout.size() + offset;
 
         #[cfg(feature = "small_allocator")]
-        if alignment == 8 && size < crate::LEAN_MAX_SMALL_OBJECT_SIZE as usize {
+        if alignment == 8 && size <= crate::LEAN_MAX_SMALL_OBJECT_SIZE as usize {
             return crate::lean_alloc_small(size as _, (size / 8 - 1) as _).cast();
         }
 
@@ -38,7 +38,7 @@ unsafe impl GlobalAlloc for LeanAlloc {
             let alignment = layout.align().max(8);
             let offset = layout.size().wrapping_neg() & (alignment - 1);
             let size = layout.size() + offset;
-            if alignment == 8 && size < crate::LEAN_MAX_SMALL_OBJECT_SIZE as usize {
+            if alignment == 8 && size <= crate::LEAN_MAX_SMALL_OBJECT_SIZE as usize {
                 return crate::lean_free_small(ptr.cast());
             }
         }
