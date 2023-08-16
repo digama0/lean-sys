@@ -1,10 +1,12 @@
+use crate::lean_get_slot_idx;
 use crate::lean_inc_heartbeat;
+use crate::LEAN_OBJECT_SIZE_DELTA;
 use core::alloc::GlobalAlloc;
 use core::alloc::Layout;
 
 /// A global allocator that uses Lean's allocator. This is useful when
 /// writing FFI libraries for Lean, where people may want to disable rust's `std`.
-/// ```no_run
+/// ```ignore
 /// #![no_std]
 /// #[global_allocator]
 /// static ALLOC : lean_sys::alloc::LeanAlloc = lean_sys::alloc::LeanAlloc;
@@ -18,13 +20,14 @@ extern "C" {
 
 unsafe impl GlobalAlloc for LeanAlloc {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        let alignment = layout.align().max(8);
+        let alignment = layout.align().max(LEAN_OBJECT_SIZE_DELTA);
         let offset = layout.size().wrapping_neg() & (alignment - 1);
         let size = layout.size() + offset;
 
         #[cfg(feature = "small_allocator")]
         if alignment == 8 && size <= crate::LEAN_MAX_SMALL_OBJECT_SIZE as usize {
-            return crate::lean_alloc_small(size as _, (size / 8 - 1) as _).cast();
+            let slot_idx = lean_get_slot_idx(size as _);
+            return crate::lean_alloc_small(size as _, slot_idx).cast();
         }
 
         lean_inc_heartbeat();
@@ -35,7 +38,7 @@ unsafe impl GlobalAlloc for LeanAlloc {
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
         #[cfg(feature = "small_allocator")]
         {
-            let alignment = layout.align().max(8);
+            let alignment = layout.align().max(LEAN_OBJECT_SIZE_DELTA);
             let offset = layout.size().wrapping_neg() & (alignment - 1);
             let size = layout.size() + offset;
             if alignment == 8 && size <= crate::LEAN_MAX_SMALL_OBJECT_SIZE as usize {

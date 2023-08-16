@@ -5,7 +5,7 @@ use crate::{
 
 /// A panic handler implementation. This is useful when
 /// writing FFI libraries for Lean, where people may want to disable rust's `std`.
-/// ```no_run
+/// ```ignore
 /// #![no_std]
 /// #[panic_handler]
 /// fn panic(info: &core::panic::PanicInfo) -> ! {

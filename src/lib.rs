@@ -142,7 +142,7 @@ pub const fn lean_align(v: usize, a: usize) -> usize {
 pub fn lean_get_slot_idx(sz: c_uint) -> c_uint {
     debug_assert_ne!(sz, 0);
     debug_assert_eq!(lean_align(sz as usize, LEAN_OBJECT_SIZE_DELTA), sz as usize);
-    sz / ((LEAN_OBJECT_SIZE_DELTA as c_uint) - 1)
+    sz / (LEAN_OBJECT_SIZE_DELTA as c_uint) - 1
 }
 
 #[inline]
