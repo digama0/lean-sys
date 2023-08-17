@@ -64,6 +64,7 @@ fn main() {
             println!("cargo:rustc-link-lib=static={lib}");
         }
     } else {
+        println!("cargo:rustc-link-search={}/lib", lean_dir.display());
         println!("cargo:rustc-link-search={}/lib/lean", lean_dir.display());
         for libs in [["Lean", "leancpp"], ["Init", "leanrt"]] {
             println!("cargo:rustc-link-arg=-Wl,--start-group");
@@ -72,8 +73,10 @@ fn main() {
             }
             println!("cargo:rustc-link-arg=-Wl,--end-group");
         }
-        println!("cargo:rustc-link-lib=static=Lake");
-        for lib in ["stdc++", "m", "dl", "gmp"] {
+        for lib in ["Lake", "c++", "c++abi"] {
+            println!("cargo:rustc-link-lib=static={lib}");
+        }
+        for lib in ["m", "dl", "gmp"] {
             println!("cargo:rustc-link-lib=dylib={lib}");
         }
     }
