@@ -1,4 +1,3 @@
-use crate::lean_get_slot_idx;
 use crate::lean_inc_heartbeat;
 use crate::LEAN_OBJECT_SIZE_DELTA;
 use core::alloc::GlobalAlloc;
@@ -27,7 +26,7 @@ unsafe impl GlobalAlloc for LeanAlloc {
         #[cfg(feature = "small_allocator")]
         if alignment == LEAN_OBJECT_SIZE_DELTA && size <= crate::LEAN_MAX_SMALL_OBJECT_SIZE as usize
         {
-            let slot_idx = lean_get_slot_idx(size as _);
+            let slot_idx = crate::lean_get_slot_idx(size as _);
             return crate::lean_alloc_small(size as _, slot_idx).cast();
         }
 
@@ -55,14 +54,12 @@ unsafe impl GlobalAlloc for LeanAlloc {
 
 #[cfg(test)]
 mod test {
-    use crate::lean_initialize_locked;
+    use crate::test::initialize_runtime_module_for_tests;
     extern crate std;
 
     #[test]
     fn various_sized_allocations() {
-        unsafe {
-            lean_initialize_locked();
-        }
+        initialize_runtime_module_for_tests();
         use core::alloc::GlobalAlloc;
         let alloc = super::LeanAlloc;
         for size in [

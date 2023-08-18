@@ -1,7 +1,35 @@
 /*!
 Utilities for initializing Lean's runtime
 */
-use parking_lot::Mutex;
+
+pub struct LibcMutex {
+    mutex: libc::pthread_mutex_t,
+}
+
+unsafe impl lock_api::RawMutex for LibcMutex {
+    const INIT: Self = Self {
+        mutex: libc::PTHREAD_MUTEX_INITIALIZER,
+    };
+
+    type GuardMarker = lock_api::GuardNoSend;
+
+    fn lock(&self) {
+        unsafe {
+            libc::pthread_mutex_lock(&self.mutex as *const _ as *mut _);
+        }
+    }
+
+    fn try_lock(&self) -> bool {
+        unsafe { libc::pthread_mutex_trylock(&self.mutex as *const _ as *mut _) == 0 }
+    }
+
+    unsafe fn unlock(&self) {
+        libc::pthread_mutex_unlock(&self.mutex as *const _ as *mut _);
+    }
+}
+
+pub type Mutex<T> = lock_api::Mutex<LibcMutex, T>;
+pub type MutexGuard<'a, T> = lock_api::MutexGuard<'a, LibcMutex, T>;
 
 /// A convenience mutex, since [`lean_initialize_runtime_module`] and [`lean_initialize`] are *not* thread-safe.
 ///
@@ -19,7 +47,7 @@ use parking_lot::Mutex;
 /// let big_nat = unsafe { lean_uint64_to_nat(u64::MAX) };
 /// assert!(!lean_is_scalar(big_nat));
 /// ```
-pub static LEAN_INIT_MUTEX: Mutex<()> = Mutex::new(());
+pub static LEAN_INIT_MUTEX: Mutex<bool> = Mutex::new(false);
 
 /// A helper function to call [`lean_initialize_runtime_module`] while holding the [`LEAN_INIT_MUTEX`].
 ///
@@ -55,4 +83,37 @@ pub unsafe fn lean_initialize_locked() {
 extern "C" {
     pub fn lean_initialize_runtime_module();
     pub fn lean_initialize();
+}
+
+#[cfg(test)]
+pub(crate) mod test {
+    use crate::{lean_initialize_runtime_module, LEAN_INIT_MUTEX};
+    extern crate std;
+
+    #[test]
+    fn basic_mutex() {
+        let mutex = std::sync::Mutex::new(0);
+        std::thread::scope(|s| {
+            for i in 0..20 {
+                let mutex = &mutex;
+                s.spawn(move || {
+                    let mut guard = mutex.lock().unwrap();
+                    *guard += i;
+                });
+            }
+        });
+        std::assert_eq!(mutex.into_inner().unwrap(), 190);
+    }
+
+    static INITIALIZED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+    pub(crate) fn initialize_runtime_module_for_tests() {
+        let _guard = LEAN_INIT_MUTEX.lock();
+        if !INITIALIZED.load(std::sync::atomic::Ordering::SeqCst) {
+            unsafe {
+                lean_initialize_runtime_module();
+            }
+            INITIALIZED.store(true, std::sync::atomic::Ordering::SeqCst);
+        }
+    }
 }

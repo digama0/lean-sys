@@ -20,7 +20,7 @@ default = ["small_allocator", "static"]
 libc = { version = "0.2", default-features = false }
 memoffset = "0.7"
 static_assertions = "1.1.0"
-parking_lot = "0.12"
+lock_api = "0.4.10"
 
 [dev-dependencies]
 rand = "0.8"
