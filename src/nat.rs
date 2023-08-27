@@ -1,7 +1,7 @@
 /*! Natural numbers */
 use crate::*;
 
-pub const LEAN_MAX_SMALL_NAT: usize = usize::MAX - 1;
+pub const LEAN_MAX_SMALL_NAT: usize = usize::MAX >> 1;
 
 #[inline]
 pub unsafe fn lean_usize_to_nat(n: usize) -> lean_obj_res {
