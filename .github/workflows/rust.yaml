@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Initialize Lean
+        run: |
+          wget https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -O elan-init.sh
+          bash elan-init.sh -y
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
       - name: Initialize Rustup
         run: |
           rustup toolchain install nightly --component rustfmt clippy --profile minimal --force
