@@ -1,3 +1,15 @@
+# 0.0.5
+
+- Removed std dependency
+- Assorted fixes and cleaning
+- Added `lean_register_external_class`
+- Added support for using Lean's allocator and panic system
+
+# 0.0.4
+
+- Fixed Mac target by renaming to `macos`
+- Bumped [`memoffset`](https://crates.io/crates/memoffset) dependency to `0.9`
+
 # 0.0.3
 
 - Updated to match latest lean.h
