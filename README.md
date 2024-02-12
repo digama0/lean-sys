@@ -19,5 +19,5 @@ then the `static` feature of this library (which is enabled by default) will nee
 
 ```toml
 [dependencies]
-lean-sys = { version = "0.0.5", features=["small_allocator"], default-features=false }
+lean-sys = { version = "0.0.5", features = ["small_allocator"], default-features = false }
 ```
