@@ -1,6 +1,6 @@
 [package]
 name = "lean-sys"
-version = "0.0.5"
+version = "0.0.6"
 authors = [
     "Jad Ghalayini <jeg74@cl.cam.ac.uk>",
     "Mario Carneiro <mcarneir@andrew.cmu.edu>",
