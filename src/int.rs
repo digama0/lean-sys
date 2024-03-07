@@ -4,12 +4,12 @@ use crate::*;
 pub const LEAN_MAX_SMALL_INT: c_int = if core::mem::size_of::<*const ()>() == 8 {
     c_int::MAX
 } else {
-    1 << 30
+    c_int::MAX >> 1
 };
 pub const LEAN_MIN_SMALL_INT: c_int = if core::mem::size_of::<*const ()>() == 8 {
     c_int::MIN
 } else {
-    -(1 << 30)
+    c_int::MIN >> 1
 };
 
 #[inline]
