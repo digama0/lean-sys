@@ -92,6 +92,13 @@ pub unsafe fn lean_string_utf8_get_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) ->
 }
 
 #[inline(always)]
+pub unsafe fn lean_string_get_byte_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) -> u8 {
+    let str = lean_string_cstr(s);
+    let idx = lean_unbox(i);
+    *str.add(idx)
+}
+
+#[inline(always)]
 pub unsafe fn lean_string_utf8_next_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) -> lean_obj_res {
     let s = lean_string_cstr(s);
     let idx = lean_unbox(i);
