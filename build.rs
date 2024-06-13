@@ -31,7 +31,21 @@ fn main() {
         lean_dir.join("lib/lean")
     };
 
-    if !cfg!(feature = "static") {
+    // To find libc++ on macOS, We must find the path to XCode, which apple enjoys
+    // changing each macOS release.
+    // Thus, we do this in a robust fashion by querying `xcrun`.
+    if cfg!(target_os = "macos") {
+        let xcrun_output = Command::new("xcrun")
+          .args(["--show-sdk-path"])
+          .output()
+          .expect("failed to execute `xcrun --show-sdk-path`, which is used to find the location of MacOS platform libraries. Please ensure that XCode is installed.");
+        let libcpp_path = PathBuf::from(String::from_utf8(xcrun_output.stdout)
+            .expect("Path returned by `xcrun --show-sdk-path` is invalid UTF-8. This must never happen.").trim())
+          .join("usr/lib");
+        println!("cargo:rustc-link-search={}", libcpp_path.display());
+    }
+
+    if cfg!(feature = "static") {
         // Step 2: check libleanshared.so/libleanshared.dylib/libleanshared.dll is actually there, just for cleaner error messages
         let mut shared_lib = lib_dir.clone();
         let exists = if cfg!(target_os = "windows") {
