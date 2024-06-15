@@ -45,33 +45,35 @@ fn main() {
         println!("cargo:rustc-link-search={}", libcpp_path.display());
     }
 
-    if cfg!(feature = "static") {
-        // Step 2: check libleanshared.so/libleanshared.dylib/libleanshared.dll is actually there, just for cleaner error messages
-        let mut shared_lib = lib_dir.clone();
-        let exists = if cfg!(target_os = "windows") {
-            shared_lib.push("libleanshared.dll");
-            shared_lib.exists()
-        } else if cfg!(target_os = "macos") {
-            shared_lib.push("libleanshared.dylib");
-            shared_lib.exists()
-        } else if cfg!(unix) {
-            shared_lib.push("libleanshared.so");
-            shared_lib.exists()
-        } else {
-            true
-        };
-        if !exists {
-            panic!(
-                "{} was not found. We errored, as this would probably cause a linking failure later",
-                shared_lib.display()
-            );
-        }
 
-        // Step 3: actually link with the library
-        println!("cargo:rustc-link-search={}", lib_dir.display());
-        println!("cargo:rustc-link-lib=leanshared");
-        println!("cargo:rustc-link-arg=-Wl,-rpath,{}", lib_dir.display());
-    } else if cfg!(feature = "extern") {
+    // if cfg!(feature = "static") {
+    //     // Step 2: check libleanshared.so/libleanshared.dylib/libleanshared.dll is actually there, just for cleaner error messages
+    //     let mut shared_lib = lib_dir.clone();
+    //     let exists = if cfg!(target_os = "windows") {
+    //         shared_lib.push("libleanshared.dll");
+    //         shared_lib.exists()
+    //     } else if cfg!(target_os = "macos") {
+    //         shared_lib.push("libleanshared.dylib");
+    //         shared_lib.exists()
+    //     } else if cfg!(unix) {
+    //         shared_lib.push("libleanshared.so");
+    //         shared_lib.exists()
+    //     } else {
+    //         true
+    //     };
+    //     if !exists {
+    //         panic!(
+    //             "{} was not found. We errored, as this would probably cause a linking failure later",
+    //             shared_lib.display()
+    //         );
+    //     }
+
+    //     // Step 3: actually link with the library
+    //     println!("cargo:rustc-link-search={}", lib_dir.display());
+    //     println!("cargo:rustc-link-lib=leanshared");
+    //     println!("cargo:rustc-link-arg=-Wl,-rpath,{}", lib_dir.display());
+    // } else if cfg!(feature = "extern") {
+    if cfg!(feature = "extern") {
         println!("cargo:rustc-link-search={}/lib/lean", lean_dir.display());
         println!("cargo:rustc-link-search={}/lib", lean_dir.display());
         for lib in ["Lean", "Init", "leanrt", "leancpp", "gmp", "c++", "c++abi"] {
@@ -87,8 +89,20 @@ fn main() {
             }
             println!("cargo:rustc-link-arg=-Wl,--end-group");
         }
-        for lib in ["Lake", "c++", "c++abi"] {
-            println!("cargo:rustc-link-lib=static={lib}");
+
+        if cfg!(target_os = "macos") {
+            // Static linking against libc++(abi) on MacOS is a total shitshow, so just don't.
+            for lib in ["Lake"] {
+                println!("cargo:rustc-link-lib=static={lib}");
+            }
+            for lib in ["c++", "c++abi"] {
+                println!("cargo:rustc-link-lib=dylib={lib}");
+            }
+
+        } else {
+            for lib in ["Lake", "c++", "c++abi"] {
+                println!("cargo:rustc-link-lib=static={lib}");
+            }
         }
         for lib in ["m", "dl", "gmp"] {
             println!("cargo:rustc-link-lib=dylib={lib}");
