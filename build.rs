@@ -1,6 +1,47 @@
 use std::path::PathBuf;
 use std::process::Command;
 
+fn cargo_add_ld_options() {
+    // Run the command 'leanc --print-ldflags'
+    let output = Command::new("leanc")
+        .arg("--print-ldflags")
+        .output()
+        .expect("Failed to execute leanc command");
+
+    // Check if the command was successful
+    if output.status.success() {
+        // Convert the output to a string
+        let output_str = String::from_utf8(output.stdout).expect("Invalid UTF-8 in output");
+
+        // Split the output by '-L' and get the part after '-L'
+        let parts: Vec<&str> = output_str.split("-L").collect();
+        if parts.len() < 2 {
+            eprintln!("Error: No ldflags found after -L");
+            return;
+        }
+        let ld_search_path = parts[1].split_whitespace().next().unwrap_or_default();
+
+        // Pass search_path to Cargo as arguments
+        println!("cargo:rustc-link-search=native={}", ld_search_path);
+
+        let lib_names : Vec<&str> = parts[1].split(" ").skip(2).map(|part| {
+            // drop the '-l' part.
+            part.split_whitespace().next().unwrap_or_default().strip_prefix("-l").unwrap_or_default()
+
+        }).collect();
+
+        for lib_name in lib_names.iter() {
+            println!("cargo:rustc-link-lib={}", lib_name);
+        }
+        println!("cargo::warning=error: lib names: {:?}", lib_names);
+        
+    } else {
+        // Print an error message if the command failed
+        println!("cargo::warning='Error: leanc command failed with status {:?}", output.status);
+    }
+}
+
+
 fn main() {
     if let Ok(docs_rs) = std::env::var("DOCS_RS") {
         // Detected build on `docs.rs`, so skip trying to link in Lean and just build docs
@@ -45,67 +86,9 @@ fn main() {
         println!("cargo:rustc-link-search={}", libcpp_path.display());
     }
 
+    println!("cargo:rustc-link-search={}/lib", lean_dir.display());
+    println!("cargo:rustc-link-search={}/lib/lean", lean_dir.display());
 
-    // if cfg!(feature = "static") {
-    //     // Step 2: check libleanshared.so/libleanshared.dylib/libleanshared.dll is actually there, just for cleaner error messages
-    //     let mut shared_lib = lib_dir.clone();
-    //     let exists = if cfg!(target_os = "windows") {
-    //         shared_lib.push("libleanshared.dll");
-    //         shared_lib.exists()
-    //     } else if cfg!(target_os = "macos") {
-    //         shared_lib.push("libleanshared.dylib");
-    //         shared_lib.exists()
-    //     } else if cfg!(unix) {
-    //         shared_lib.push("libleanshared.so");
-    //         shared_lib.exists()
-    //     } else {
-    //         true
-    //     };
-    //     if !exists {
-    //         panic!(
-    //             "{} was not found. We errored, as this would probably cause a linking failure later",
-    //             shared_lib.display()
-    //         );
-    //     }
-
-    //     // Step 3: actually link with the library
-    //     println!("cargo:rustc-link-search={}", lib_dir.display());
-    //     println!("cargo:rustc-link-lib=leanshared");
-    //     println!("cargo:rustc-link-arg=-Wl,-rpath,{}", lib_dir.display());
-    // } else if cfg!(feature = "extern") {
-    if cfg!(feature = "extern") {
-        println!("cargo:rustc-link-search={}/lib/lean", lean_dir.display());
-        println!("cargo:rustc-link-search={}/lib", lean_dir.display());
-        for lib in ["Lean", "Init", "leanrt", "leancpp", "gmp", "c++", "c++abi"] {
-            println!("cargo:rustc-link-lib=static={lib}");
-        }
-    } else {
-        println!("cargo:rustc-link-search={}/lib", lean_dir.display());
-        println!("cargo:rustc-link-search={}/lib/lean", lean_dir.display());
-        for libs in [["Lean", "leancpp"], ["Init", "leanrt"]] {
-            println!("cargo:rustc-link-arg=-Wl,--start-group");
-            for lib in libs {
-                println!("cargo:rustc-link-lib=static={lib}");
-            }
-            println!("cargo:rustc-link-arg=-Wl,--end-group");
-        }
-
-        if cfg!(target_os = "macos") {
-            // Static linking against libc++(abi) on MacOS is a total shitshow, so just don't.
-            for lib in ["Lake"] {
-                println!("cargo:rustc-link-lib=static={lib}");
-            }
-            for lib in ["c++", "c++abi"] {
-                println!("cargo:rustc-link-lib=dylib={lib}");
-            }
-
-        } else {
-            for lib in ["Lake", "c++", "c++abi"] {
-                println!("cargo:rustc-link-lib=static={lib}");
-            }
-        }
-        for lib in ["m", "dl", "gmp"] {
-            println!("cargo:rustc-link-lib=dylib={lib}");
-        }
-    }
+    cargo_add_ld_options();
+    
 }
