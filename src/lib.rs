@@ -29,6 +29,7 @@ pub mod primitive;
 pub mod sarray;
 pub mod string;
 pub mod task;
+pub mod thread;
 pub mod thunk;
 
 pub use array::*;
@@ -44,6 +45,7 @@ pub use primitive::*;
 pub use sarray::*;
 pub use string::*;
 pub use task::*;
+pub use thread::*;
 pub use thunk::*;
 
 pub const LEAN_SMALL_ALLOCATOR: bool = cfg!(feature = "small_allocator");
