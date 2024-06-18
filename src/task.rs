@@ -64,8 +64,8 @@ extern "C" {
     pub fn lean_io_check_canceled_core() -> bool;
     /** primitive for implementing `IO.cancel : Task a -> IO Unit` */
     pub fn lean_io_cancel_core(t: b_lean_obj_arg);
-    /** primitive for implementing `IO.hasFinished : Task a -> IO Unit` */
-    pub fn lean_io_has_finished_core(t: b_lean_obj_arg) -> bool;
+    /** primitive for implementing `IO.getTaskState : Task a -> IO TaskState` */
+    pub fn lean_io_get_task_state_core(t: b_lean_obj_arg) -> u8;
     /** primitive for implementing `IO.waitAny : List (Task a) -> IO (Task a)` */
     pub fn lean_io_wait_any_core(task_list: b_lean_obj_arg) -> b_lean_obj_res;
 }
