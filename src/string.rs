@@ -134,4 +134,5 @@ extern "C" {
     pub fn lean_string_eq_cold(s1: b_lean_obj_arg, s2: b_lean_obj_arg) -> bool;
     pub fn lean_string_lt(s1: b_lean_obj_arg, s2: b_lean_obj_arg) -> bool;
     pub fn lean_string_hash(s: b_lean_obj_arg) -> u64;
+    pub fn lean_string_of_usize(s: usize) -> lean_obj_res;
 }

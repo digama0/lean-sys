@@ -133,6 +133,76 @@ pub unsafe fn lean_int_mod(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_r
     }
 }
 
+pub unsafe fn lean_int_ediv(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_res {
+    if lean_is_scalar(a1) && lean_is_scalar(a2) {
+        if core::mem::size_of::<usize>() == 8 {
+            /* 64-bit version, we use 64-bit numbers to avoid overflow when v1 == LEAN_MIN_SMALL_INT. */
+            let n = lean_scalar_to_int64(a1);
+            let d = lean_scalar_to_int64(a2);
+            if d == 0 {
+                lean_box(0)
+            } else {
+                let mut q = n / d;
+                let r = n % d;
+                if r < 0 {
+                    q = if d > 0 { q - 1 } else { q + 1 };
+                }
+                lean_int64_to_int(q)
+            }
+        } else {
+            /* 32-bit version */
+            let n = lean_scalar_to_int(a1);
+            let d = lean_scalar_to_int(a2);
+            if d == 0 {
+                lean_box(0)
+            } else {
+                let mut q = n / d;
+                let r = n % d;
+                if r < 0 {
+                    q = if d > 0 { q - 1 } else { q + 1 };
+                }
+                lean_int_to_int(q)
+            }
+        }
+    } else {
+        lean_int_big_ediv(a1, a2)
+    }
+}
+
+pub unsafe fn lean_int_emod(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_res {
+    if lean_is_scalar(a1) && lean_is_scalar(a2) {
+        if core::mem::size_of::<usize>() == 8 {
+            /* 64-bit version, we use 64-bit numbers to avoid overflow when v1 == LEAN_MIN_SMALL_INT. */
+            let n = lean_scalar_to_int64(a1);
+            let d = lean_scalar_to_int64(a2);
+            if d == 0 {
+                a1
+            } else {
+                let mut r = n % d;
+                if r < 0 {
+                    r = if d > 0 { r + d } else { r - d };
+                }
+                lean_int64_to_int(r)
+            }
+        } else {
+            /* 32-bit version */
+            let n = lean_scalar_to_int(a1);
+            let d = lean_scalar_to_int(a2);
+            if d == 0 {
+                a1
+            } else {
+                let mut r = n % d;
+                if r < 0 {
+                    r = if d > 0 { r + d } else { r - d };
+                }
+                lean_int_to_int(r)
+            }
+        }
+    } else {
+        lean_int_big_emod(a1, a2)
+    }
+}
+
 #[inline]
 pub unsafe fn lean_int_eq(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> bool {
     a1 == a2 || lean_int_big_eq(a1, a2)
@@ -213,6 +283,8 @@ extern "C" {
     pub fn lean_int_big_mul(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_int_big_div(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_int_big_mod(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
+    pub fn lean_int_big_ediv(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
+    pub fn lean_int_big_emod(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_int_big_eq(a1: *mut lean_object, a2: *mut lean_object) -> bool;
     pub fn lean_int_big_le(a1: *mut lean_object, a2: *mut lean_object) -> bool;
     pub fn lean_int_big_lt(a1: *mut lean_object, a2: *mut lean_object) -> bool;
