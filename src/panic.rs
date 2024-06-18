@@ -13,6 +13,7 @@ use crate::{
 /// }
 /// ```
 pub fn panic_handler(info: &core::panic::PanicInfo) -> ! {
+    #[allow(deprecated)] // the payload() function always returns None
     let message = if let Some(s) = info.payload().downcast_ref::<&str>() {
         s.as_bytes()
     } else {
