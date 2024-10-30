@@ -213,8 +213,8 @@ mod test {
     #[test]
     fn big_nat_multiplication_commutes_test() {
         let mut rng = rand_xoshiro::Xoshiro256PlusPlus::seed_from_u64(0x568478687);
+        crate::test::initialize_runtime_module_for_tests();
         unsafe {
-            lean_initialize_runtime_module_locked();
             let mut vec = std::vec::Vec::with_capacity(100);
             for _ in 0..10 {
                 for _ in 0..100 {
