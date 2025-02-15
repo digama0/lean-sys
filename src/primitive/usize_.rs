@@ -51,7 +51,7 @@ pub fn lean_usize_mod(a1: usize, a2: usize) -> usize {
 
 #[inline(always)]
 pub fn lean_usize_land(a1: usize, a2: usize) -> usize {
-    a1 ^ a2
+    a1 & a2
 }
 
 #[inline(always)]
@@ -80,16 +80,6 @@ pub fn lean_usize_complement(a: usize) -> usize {
 }
 
 #[inline(always)]
-pub unsafe fn lean_usize_modn(a1: usize, a2: b_lean_obj_arg) -> usize {
-    if lean_is_scalar(a2) {
-        //TODO: likely
-        lean_usize_mod(a1, lean_unbox(a2))
-    } else {
-        lean_usize_big_modn(a1, a2)
-    }
-}
-
-#[inline(always)]
 pub fn lean_usize_dec_eq(a1: usize, a2: usize) -> usize {
     (a1 == a2) as usize
 }
@@ -105,10 +95,17 @@ pub fn lean_usize_dec_le(a1: usize, a2: usize) -> usize {
 }
 
 #[inline]
+pub fn lean_usize_to_uint8(a: usize) -> u8 {
+    a as u8
+}
+#[inline]
+pub fn lean_usize_to_uint16(a: usize) -> u16 {
+    a as u16
+}
+#[inline]
 pub fn lean_usize_to_uint32(a: usize) -> u32 {
     a as u32
 }
-
 #[inline]
 pub fn lean_usize_to_uint64(a: usize) -> u64 {
     a as u64
@@ -116,6 +113,5 @@ pub fn lean_usize_to_uint64(a: usize) -> u64 {
 
 extern "C" {
     pub fn lean_usize_of_big_nat(a: b_lean_obj_arg) -> usize;
-    pub fn lean_usize_big_modn(a1: usize, a2: b_lean_obj_arg) -> usize;
     pub fn lean_usize_mix_hash(a1: usize, a2: usize) -> usize;
 }

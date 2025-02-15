@@ -46,7 +46,9 @@ pub unsafe fn lean_io_result_mk_error(a: lean_obj_arg) -> lean_obj_res {
 }
 
 extern "C" {
+    pub fn lean_io_error_to_string(err: *mut lean_object) -> *mut lean_object;
     pub fn lean_decode_io_error(errnum: c_int, fname: b_lean_obj_arg) -> lean_obj_res;
+    pub fn lean_decode_uv_error(errnum: c_int, fname: b_lean_obj_arg) -> lean_obj_res;
 
     pub fn lean_io_result_show_error(r: b_lean_obj_arg);
     pub fn lean_io_mark_end_initialization();

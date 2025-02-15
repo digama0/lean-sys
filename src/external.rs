@@ -23,6 +23,19 @@ pub unsafe fn lean_get_external_data(o: *mut lean_object) -> *mut c_void {
     *raw_field!(lean_to_external(o), lean_external_object, m_data)
 }
 
+#[inline(always)]
+pub unsafe fn lean_set_external_data(o: *mut lean_object, data: *mut c_void) -> *mut lean_object {
+    if lean_is_exclusive(o) {
+        (raw_field!(lean_to_external(o), lean_external_object, m_data) as *mut *mut c_void)
+            .write(data);
+        o
+    } else {
+        let o_new = lean_alloc_external(lean_get_external_class(o), data);
+        lean_dec_ref(o);
+        o_new
+    }
+}
+
 extern "C" {
     pub fn lean_register_external_class(
         _: lean_external_finalize_proc,

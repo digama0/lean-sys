@@ -56,7 +56,7 @@ pub fn lean_uint32_mod(a1: u32, a2: u32) -> u32 {
 
 #[inline(always)]
 pub fn lean_uint32_land(a1: u32, a2: u32) -> u32 {
-    a1 ^ a2
+    a1 & a2
 }
 
 #[inline(always)]
@@ -85,19 +85,6 @@ pub fn lean_uint32_complement(a: u32) -> u32 {
 }
 
 #[inline(always)]
-pub unsafe fn lean_uint32_modn(a1: u32, a2: b_lean_obj_arg) -> u32 {
-    if lean_is_scalar(a2) {
-        //TODO: likely
-        lean_uint32_mod(a1, lean_unbox(a2) as u32)
-    } else if core::mem::size_of::<*const ()>() == 4 {
-        /* 32-bit */
-        lean_uint32_big_modn(a1, a2)
-    } else {
-        a1
-    }
-}
-
-#[inline(always)]
 pub fn lean_uint32_dec_eq(a1: u32, a2: u32) -> u32 {
     (a1 == a2) as u32
 }
@@ -116,17 +103,14 @@ pub fn lean_uint32_dec_le(a1: u32, a2: u32) -> u32 {
 pub fn lean_uint32_to_uint8(a: u32) -> u8 {
     a as u8
 }
-
 #[inline]
 pub fn lean_uint32_to_uint16(a: u32) -> u16 {
     a as u16
 }
-
 #[inline]
 pub fn lean_uint32_to_uint64(a: u32) -> u64 {
     a as u64
 }
-
 #[inline]
 pub fn lean_uint32_to_usize(a: u32) -> usize {
     a as usize
@@ -134,5 +118,4 @@ pub fn lean_uint32_to_usize(a: u32) -> usize {
 
 extern "C" {
     pub fn lean_uint32_of_big_nat(a: b_lean_obj_arg) -> u32;
-    pub fn lean_uint32_big_modn(a1: u32, a2: b_lean_obj_arg) -> u32;
 }

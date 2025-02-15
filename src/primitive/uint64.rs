@@ -51,7 +51,7 @@ pub fn lean_uint64_mod(a1: u64, a2: u64) -> u64 {
 
 #[inline(always)]
 pub fn lean_uint64_land(a1: u64, a2: u64) -> u64 {
-    a1 ^ a2
+    a1 & a2
 }
 
 #[inline(always)]
@@ -77,16 +77,6 @@ pub fn lean_uint64_shift_right(a1: u64, a2: u64) -> u64 {
 #[inline(always)]
 pub fn lean_uint64_complement(a: u64) -> u64 {
     !a
-}
-
-#[inline(always)]
-pub unsafe fn lean_uint64_modn(a1: u64, a2: b_lean_obj_arg) -> u64 {
-    if lean_is_scalar(a2) {
-        //TODO: likely
-        lean_uint64_mod(a1, lean_unbox(a2) as u64)
-    } else {
-        lean_uint64_big_modn(a1, a2)
-    }
 }
 
 #[inline(always)]
@@ -126,6 +116,5 @@ pub fn lean_uint64_to_usize(a: u64) -> usize {
 
 extern "C" {
     pub fn lean_uint64_of_big_nat(a: b_lean_obj_arg) -> u64;
-    pub fn lean_uint64_big_modn(a1: u64, a2: b_lean_obj_arg) -> u64;
     pub fn lean_uint64_mix_hash(a1: u64, a2: u64) -> u64;
 }

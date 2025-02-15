@@ -54,5 +54,7 @@ extern "C" {
     pub fn lean_float_isnan(a: f64) -> u8;
     pub fn lean_float_isfinite(a: f64) -> u8;
     pub fn lean_float_isinf(a: f64) -> u8;
-    pub fn lean_float_frexp(a: u8) -> lean_obj_res;
+    pub fn lean_float_frexp(a: f64) -> lean_obj_res;
+    pub fn lean_float_of_bits(a: u64) -> f64;
+    pub fn lean_float_to_bits(a: f64) -> u64;
 }

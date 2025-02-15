@@ -23,10 +23,12 @@ pub mod external;
 pub mod init;
 pub mod int;
 pub mod io;
+pub mod libuv;
 pub mod nat;
 pub mod panic;
 pub mod primitive;
 pub mod sarray;
+pub mod share_common;
 pub mod string;
 pub mod task;
 pub mod thread;
@@ -40,9 +42,11 @@ pub use external::*;
 pub use init::*;
 pub use int::*;
 pub use io::*;
+pub use libuv::*;
 pub use nat::*;
 pub use primitive::*;
 pub use sarray::*;
+pub use share_common::*;
 pub use string::*;
 pub use task::*;
 pub use thread::*;
@@ -427,6 +431,11 @@ pub unsafe fn lean_is_exclusive(o: *mut lean_object) -> bool {
 }
 
 #[inline]
+pub unsafe fn lean_is_exclusive_obj(o: *mut lean_object) -> u8 {
+    lean_is_exclusive(o) as u8
+}
+
+#[inline]
 pub unsafe fn lean_is_shared(o: *mut lean_object) -> bool {
     //TODO: likely... or, why not just relaxed_rc_load(o) > 1?
     if lean_is_st(o) {
@@ -484,14 +493,18 @@ extern "C" {
     We retrieve their size by accessing the page header. The size of
     small objects is a multiple of `LEAN_OBJECT_SIZE_DELTA` */
     pub fn lean_object_byte_size(o: *mut lean_object) -> usize;
+    /** Returns the size of the salient part of an object's storage,
+    i.e. the parts that contribute to the value representation;
+    padding or unused capacity is excluded. Operations that read
+    from an object's storage must only access these parts, since
+    the non-salient parts may not be initialized. */
+    pub fn lean_object_data_byte_size(o: *mut lean_object) -> usize;
     #[cold]
     pub fn lean_inc_ref_cold(o: *mut lean_object);
     #[cold]
     pub fn lean_inc_ref_n_cold(o: *mut lean_object, n: c_uint);
     #[cold]
     pub fn lean_dec_ref_cold(o: *mut lean_object);
-    /** Just free memory */
-    pub fn lean_dealloc(o: *mut lean_object);
     pub fn lean_mark_mt(o: *mut lean_object);
     pub fn lean_mark_persistent(o: *mut lean_object);
 }

@@ -60,3 +60,15 @@ pub unsafe fn lean_box_float(v: f64) -> lean_obj_res {
 pub unsafe fn lean_unbox_float(o: b_lean_obj_arg) -> f64 {
     lean_ctor_get_float(o, 0)
 }
+
+#[inline]
+pub unsafe fn lean_box_float32(v: f32) -> lean_obj_res {
+    let r = lean_alloc_ctor(0, 0, core::mem::size_of::<f32>() as c_uint);
+    lean_ctor_set_float32(r, 0, v);
+    r
+}
+
+#[inline(always)]
+pub unsafe fn lean_unbox_float32(o: b_lean_obj_arg) -> f32 {
+    lean_ctor_get_float32(o, 0)
+}

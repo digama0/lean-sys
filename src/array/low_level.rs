@@ -28,6 +28,11 @@ pub unsafe fn lean_array_byte_size(o: b_lean_obj_arg) -> usize {
         + core::mem::size_of::<*mut ()>() * lean_array_capacity(o)
 }
 
+#[inline]
+pub unsafe fn lean_array_data_byte_size(o: b_lean_obj_arg) -> usize {
+    core::mem::size_of::<lean_array_object>() + core::mem::size_of::<*mut ()>() * lean_array_size(o)
+}
+
 #[inline(always)]
 pub unsafe fn lean_array_cptr(o: b_lean_obj_arg) -> *mut *mut lean_object {
     raw_field!(o, lean_array_object, m_data) as *mut _
@@ -58,5 +63,5 @@ pub unsafe fn lean_array_set_core(o: u_lean_obj_arg, i: usize, v: lean_obj_arg) 
 
 extern "C" {
     pub fn lean_array_mk(l: lean_obj_arg) -> *mut lean_object;
-    pub fn lean_array_data(a: lean_obj_arg) -> *mut lean_object;
+    pub fn lean_array_to_list(a: lean_obj_arg) -> *mut lean_object;
 }

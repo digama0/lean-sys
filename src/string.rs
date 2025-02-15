@@ -45,6 +45,11 @@ pub unsafe fn lean_string_len(o: b_lean_obj_arg) -> usize {
 }
 
 #[inline(always)]
+pub unsafe fn lean_string_data_byte_size(o: *mut lean_object) -> usize {
+    core::mem::size_of::<lean_string_object>() + lean_string_size(o)
+}
+
+#[inline(always)]
 pub unsafe fn lean_string_length(o: b_lean_obj_arg) -> lean_obj_res {
     lean_box(lean_string_len(o))
 }
@@ -113,7 +118,10 @@ pub unsafe fn lean_string_utf8_next_fast(s: b_lean_obj_arg, i: b_lean_obj_arg) -
 extern "C" {
     pub fn lean_utf8_strlen(str: *const u8) -> usize;
     pub fn lean_utf8_n_strlen(str: *const u8, n: usize) -> usize;
+    pub fn lean_mk_string_unchecked(s: *const u8, sz: usize, len: usize) -> lean_obj_res;
     pub fn lean_mk_string_from_bytes(s: *const u8, sz: usize) -> lean_obj_res;
+    pub fn lean_mk_string_from_bytes_unchecked(s: *const u8, sz: usize) -> lean_obj_res;
+    pub fn lean_mk_ascii_string_unchecked(s: *const u8) -> lean_obj_res;
     pub fn lean_mk_string(s: *const u8) -> lean_obj_res;
     pub fn lean_string_push(s: lean_obj_arg, c: u32) -> lean_obj_res;
     pub fn lean_string_append(s1: lean_obj_arg, s2: lean_obj_arg) -> lean_obj_res;

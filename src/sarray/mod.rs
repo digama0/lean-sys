@@ -30,13 +30,17 @@ pub unsafe fn lean_sarray_capacity(o: *const lean_object) -> usize {
 
 #[inline]
 pub unsafe fn lean_sarray_byte_size(o: *const lean_object) -> usize {
-    core::mem::size_of::<lean_sarray_object>()
-        + (lean_sarray_elem_size(o) as usize) * lean_sarray_capacity(o)
+    size_of::<lean_sarray_object>() + lean_sarray_elem_size(o) as usize * lean_sarray_capacity(o)
 }
 
 #[inline(always)]
 pub unsafe fn lean_sarray_size(o: *const lean_object) -> usize {
     *raw_field!(lean_to_sarray(o as *mut _), lean_sarray_object, m_size)
+}
+
+#[inline(always)]
+pub unsafe fn lean_sarray_data_byte_size(o: *const lean_object) -> usize {
+    size_of::<lean_sarray_object>() + lean_sarray_elem_size(o) as usize * lean_sarray_size(o)
 }
 
 #[inline(always)]

@@ -80,26 +80,31 @@ pub unsafe fn lean_ctor_get_uint8(o: b_lean_obj_arg, offset: c_uint) -> u8 {
 #[inline(always)]
 pub unsafe fn lean_ctor_get_uint16(o: b_lean_obj_arg, offset: c_uint) -> u16 {
     debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
-    ((lean_ctor_obj_cptr(o) as *const u8).add(offset as usize) as *const u16).read_unaligned()
+    ((lean_ctor_obj_cptr(o) as *const u8).add(offset as usize) as *const u16).read()
 }
 
 #[inline(always)]
 pub unsafe fn lean_ctor_get_uint32(o: b_lean_obj_arg, offset: c_uint) -> u32 {
     debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
-    ((lean_ctor_obj_cptr(o) as *const u8).add(offset as usize) as *const u32).read_unaligned()
+    ((lean_ctor_obj_cptr(o) as *const u8).add(offset as usize) as *const u32).read()
 }
 
 #[inline(always)]
 pub unsafe fn lean_ctor_get_uint64(o: b_lean_obj_arg, offset: c_uint) -> u64 {
     debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
-    ((lean_ctor_obj_cptr(o) as *const u8).add(offset as usize) as *const u64).read_unaligned()
+    ((lean_ctor_obj_cptr(o) as *const u8).add(offset as usize) as *const u64).read()
 }
 
 #[inline(always)]
 pub unsafe fn lean_ctor_get_float(o: b_lean_obj_arg, offset: c_uint) -> f64 {
     debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
-    //TODO: is read_unaligned necessary here?
-    ((lean_ctor_obj_cptr(o) as *const u8).add(offset as usize) as *const f64).read_unaligned()
+    ((lean_ctor_obj_cptr(o) as *const u8).add(offset as usize) as *const f64).read()
+}
+
+#[inline(always)]
+pub unsafe fn lean_ctor_get_float32(o: b_lean_obj_arg, offset: c_uint) -> f32 {
+    debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
+    ((lean_ctor_obj_cptr(o) as *const u8).add(offset as usize) as *const f32).read()
 }
 
 #[inline(always)]
@@ -119,23 +124,29 @@ pub unsafe fn lean_ctor_set_uint8(o: b_lean_obj_arg, offset: c_uint, v: u8) {
 #[inline(always)]
 pub unsafe fn lean_ctor_set_uint16(o: b_lean_obj_arg, offset: c_uint, v: u16) {
     debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
-    ((lean_ctor_obj_cptr(o) as *mut u8).add(offset as usize) as *mut u16).write_unaligned(v)
+    ((lean_ctor_obj_cptr(o) as *mut u8).add(offset as usize) as *mut u16).write(v)
 }
 
 #[inline(always)]
 pub unsafe fn lean_ctor_set_uint32(o: b_lean_obj_arg, offset: c_uint, v: u32) {
     debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
-    ((lean_ctor_obj_cptr(o) as *mut u8).add(offset as usize) as *mut u32).write_unaligned(v)
+    ((lean_ctor_obj_cptr(o) as *mut u8).add(offset as usize) as *mut u32).write(v)
 }
 
 #[inline(always)]
 pub unsafe fn lean_ctor_set_uint64(o: b_lean_obj_arg, offset: c_uint, v: u64) {
     debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
-    ((lean_ctor_obj_cptr(o) as *mut u8).add(offset as usize) as *mut u64).write_unaligned(v)
+    ((lean_ctor_obj_cptr(o) as *mut u8).add(offset as usize) as *mut u64).write(v)
 }
 
 #[inline(always)]
 pub unsafe fn lean_ctor_set_float(o: b_lean_obj_arg, offset: c_uint, v: f64) {
     debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
-    ((lean_ctor_obj_cptr(o) as *mut u8).add(offset as usize) as *mut f64).write_unaligned(v)
+    ((lean_ctor_obj_cptr(o) as *mut u8).add(offset as usize) as *mut f64).write(v)
+}
+
+#[inline(always)]
+pub unsafe fn lean_ctor_set_float32(o: b_lean_obj_arg, offset: c_uint, v: f32) {
+    debug_assert!(offset >= lean_ctor_num_objs(o) * core::mem::size_of::<*const ()>() as c_uint);
+    ((lean_ctor_obj_cptr(o) as *mut u8).add(offset as usize) as *mut f32).write(v)
 }
