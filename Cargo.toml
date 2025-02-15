@@ -1,6 +1,6 @@
 [package]
 name = "lean-sys"
-version = "0.0.7"
+version = "0.0.8"
 authors = [
     "Jad Ghalayini <jeg74@cl.cam.ac.uk>",
     "Mario Carneiro <mcarneir@andrew.cmu.edu>",
@@ -27,5 +27,5 @@ static_assertions = "1.1.0"
 parking_lot = "0.12"
 
 [dev-dependencies]
-rand = "0.8"
-rand_xoshiro = "0.6"
+rand = "0.9"
+rand_xoshiro = "0.7"
