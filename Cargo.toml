@@ -17,8 +17,7 @@ links = "leanshared"
 [features]
 small_allocator = []
 extern = []
-static = []
-default = ["small_allocator", "static"]
+default = ["small_allocator"]
 
 [dependencies]
 libc = { version = "0.2", default-features = false }
