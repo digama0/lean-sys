@@ -54,14 +54,12 @@ unsafe impl GlobalAlloc for LeanAlloc {
 
 #[cfg(test)]
 mod test {
-    use crate::lean_initialize_locked;
+    use crate::test::initialize_runtime_module_for_tests;
     extern crate std;
 
     #[test]
     fn various_sized_allocations() {
-        unsafe {
-            lean_initialize_locked();
-        }
+        initialize_runtime_module_for_tests();
         use core::alloc::GlobalAlloc;
         let alloc = super::LeanAlloc;
         for size in [
