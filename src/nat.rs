@@ -189,7 +189,7 @@ pub unsafe fn lean_nat_shiftr(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_ob
         //TODO: likely
         let s1 = lean_unbox(a1);
         let s2 = lean_unbox(a2);
-        let r = if s2 < size_of::<usize>() * 8 {
+        let r = if s2 < usize::BITS as usize {
             s1 >> s2
         } else {
             0

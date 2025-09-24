@@ -142,7 +142,7 @@ pub fn lean_unbox(o: *const lean_object) -> usize {
 
 #[inline]
 pub const fn lean_align(v: usize, a: usize) -> usize {
-    (v / a).wrapping_mul(a) + a.wrapping_mul((v % a != 0) as usize)
+    (v / a).wrapping_mul(a) + a.wrapping_mul(!v.is_multiple_of(a) as usize)
 }
 
 #[inline]
