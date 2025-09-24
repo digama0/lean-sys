@@ -94,6 +94,11 @@ pub fn lean_int8_complement(a: u8) -> u8 {
 }
 
 #[inline(always)]
+pub fn lean_int8_abs(a: u8) -> u8 {
+    (a as i8).unsigned_abs()
+}
+
+#[inline(always)]
 pub fn lean_int8_dec_eq(a1: u8, a2: u8) -> u8 {
     (a1 as i8 == a2 as i8) as u8
 }
@@ -119,6 +124,11 @@ pub fn lean_int8_to_int32(a: u8) -> u32 {
 #[inline]
 pub fn lean_int8_to_int64(a: u8) -> u64 {
     a as i8 as i64 as u64
+}
+
+#[inline]
+pub fn lean_int8_to_isize(a: u8) -> usize {
+    a as i8 as isize as usize
 }
 
 extern "C" {

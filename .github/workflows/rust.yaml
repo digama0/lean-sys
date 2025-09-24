@@ -29,6 +29,6 @@ jobs:
       - name: Run clippy
         run: cargo clippy --all -- --deny warnings
       - name: Run debug tests
-        run: cargo test --verbose --no-default-features --features=small_allocator
+        run: cargo test --verbose --no-default-features --features=mimalloc
       - name: Run release tests
-        run: cargo test --verbose --release --no-default-features --features=small_allocator
+        run: cargo test --verbose --release --no-default-features --features=mimalloc

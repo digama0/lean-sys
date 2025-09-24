@@ -94,6 +94,11 @@ pub fn lean_int16_complement(a: u16) -> u16 {
 }
 
 #[inline(always)]
+pub fn lean_int16_abs(a: u16) -> u16 {
+    (a as i16).unsigned_abs()
+}
+
+#[inline(always)]
 pub fn lean_int16_dec_eq(a1: u16, a2: u16) -> u16 {
     (a1 as i16 == a2 as i16) as u16
 }
@@ -119,6 +124,10 @@ pub fn lean_int16_to_int32(a: u16) -> u32 {
 #[inline]
 pub fn lean_int16_to_int64(a: u16) -> u64 {
     a as i16 as i64 as u64
+}
+#[inline]
+pub fn lean_int16_to_isize(a: u16) -> usize {
+    a as i16 as isize as usize
 }
 
 extern "C" {

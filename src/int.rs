@@ -108,14 +108,28 @@ pub unsafe fn lean_int_mul(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_r
 #[inline]
 pub unsafe fn lean_int_div(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_res {
     if lean_is_scalar(a1) && lean_is_scalar(a2) {
-        let a2 = lean_scalar_to_int64(a2);
+        let a2 = lean_scalar_to_int(a2) as i64;
         if a2 == 0 {
             lean_box(0)
         } else {
-            lean_int64_to_int(lean_scalar_to_int64(a1) / a2)
+            lean_int64_to_int(lean_scalar_to_int(a1) as i64 / a2)
         }
     } else {
         lean_int_big_div(a1, a2)
+    }
+}
+
+#[inline]
+pub unsafe fn lean_int_div_exact(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_res {
+    if lean_is_scalar(a1) && lean_is_scalar(a2) {
+        let a2 = lean_scalar_to_int(a2) as i64;
+        if a2 == 0 {
+            lean_box(0)
+        } else {
+            lean_int64_to_int(lean_scalar_to_int(a1) as i64 / a2)
+        }
+    } else {
+        lean_int_big_div_exact(a1, a2)
     }
 }
 
@@ -282,6 +296,7 @@ extern "C" {
     pub fn lean_int_big_sub(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_int_big_mul(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_int_big_div(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
+    pub fn lean_int_big_div_exact(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_int_big_mod(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_int_big_ediv(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_int_big_emod(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;

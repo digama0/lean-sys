@@ -10,7 +10,7 @@ Functions and comments manually translated from those in the [`lean.h` header](h
 #![no_std]
 
 use core::ffi::*;
-use core::sync::atomic::{AtomicI32, AtomicI64, Ordering};
+use core::sync::atomic::{AtomicI32, AtomicI64, AtomicU32, Ordering};
 use memoffset::raw_field;
 use static_assertions::const_assert;
 
@@ -53,10 +53,12 @@ pub use thread::*;
 pub use thunk::*;
 
 pub const LEAN_SMALL_ALLOCATOR: bool = cfg!(feature = "small_allocator");
+pub const LEAN_MIMALLOC: bool = cfg!(feature = "mimalloc");
 pub const LEAN_CLOSURE_MAX_ARGS: u32 = 16;
 pub const LEAN_OBJECT_SIZE_DELTA: usize = 8;
 pub const LEAN_MAX_SMALL_OBJECT_SIZE: u32 = 4096;
-pub const LeanMaxCtorTag: u8 = 244;
+pub const LeanMaxCtorTag: u8 = 243;
+pub const LeanPromise: u8 = 244;
 pub const LeanClosure: u8 = 245;
 pub const LeanArray: u8 = 246;
 pub const LeanStructArray: u8 = 247;
@@ -78,8 +80,7 @@ const_assert! {
 
 #[inline(always)]
 pub const fn layout_compat<A, B>() -> bool {
-    core::mem::size_of::<A>() == core::mem::size_of::<B>()
-        && core::mem::align_of::<A>() == core::mem::align_of::<B>()
+    size_of::<A>() == size_of::<B>() && align_of::<A>() == align_of::<B>()
 }
 
 #[inline(always)]
@@ -157,15 +158,30 @@ pub unsafe fn lean_alloc_small_object(sz: c_uint) -> *mut lean_object {
         let sz = lean_align(sz as usize, LEAN_OBJECT_SIZE_DELTA) as c_uint;
         let slot_idx = lean_get_slot_idx(sz);
         debug_assert!(sz <= LEAN_MAX_SMALL_OBJECT_SIZE);
-        lean_alloc_small(sz, slot_idx) as *mut _
+        lean_alloc_small(sz, slot_idx).cast()
     } else {
         lean_inc_heartbeat();
-        let mem = libc::malloc(core::mem::size_of::<usize>() + sz as usize) as *mut usize;
-        if mem.is_null() {
-            lean_internal_panic_out_of_memory()
+        if LEAN_MIMALLOC {
+            // HACK: emulate behavior of small allocator to avoid `leangz` breakage for now
+            let sz = lean_align(sz as usize, LEAN_OBJECT_SIZE_DELTA) as c_uint;
+            #[cfg(feature = "libmimalloc-sys")]
+            let mem = libmimalloc_sys::mi_malloc_small(sz as usize);
+            #[cfg(not(feature = "libmimalloc-sys"))]
+            let mem = core::ptr::null_mut::<c_void>();
+            if mem.is_null() {
+                lean_internal_panic_out_of_memory()
+            }
+            let o = mem.cast::<lean_object>();
+            (*o).m_cs_sz = sz as u16;
+            o
+        } else {
+            let mem = libc::malloc(size_of::<usize>() + sz as usize) as *mut usize;
+            if mem.is_null() {
+                lean_internal_panic_out_of_memory()
+            }
+            *mem = sz as usize;
+            mem.add(1).cast()
         }
-        *mem = sz as usize;
-        mem.add(1) as *mut _
     }
 }
 
@@ -191,6 +207,13 @@ pub unsafe fn lean_alloc_ctor_memory(sz: c_uint) -> *mut lean_object {
             *end.sub(1) = 0;
         }
         r as *mut lean_object
+    } else if LEAN_MIMALLOC {
+        let sz1 = lean_align(sz as usize, LEAN_OBJECT_SIZE_DELTA) as c_uint;
+        let r = lean_alloc_small_object(sz1);
+        if sz1 > sz {
+            *r.byte_add(sz1 as usize).cast::<usize>().sub(1) = 0;
+        }
+        r
     } else {
         lean_alloc_small_object(sz)
     }
@@ -199,18 +222,27 @@ pub unsafe fn lean_alloc_ctor_memory(sz: c_uint) -> *mut lean_object {
 #[inline(always)]
 pub unsafe fn lean_small_object_size(o: *mut lean_object) -> c_uint {
     if LEAN_SMALL_ALLOCATOR {
-        lean_small_mem_size(o as *mut _)
+        lean_small_mem_size(o.cast())
+    } else if LEAN_MIMALLOC {
+        (*o).m_cs_sz as c_uint
     } else {
-        *(o as *mut usize).sub(1) as c_uint
+        *o.cast::<usize>().sub(1) as c_uint
     }
 }
 
 #[inline(always)]
 pub unsafe fn lean_free_small_object(o: *mut lean_object) {
     if LEAN_SMALL_ALLOCATOR {
-        lean_free_small(o as *mut _)
+        lean_free_small(o.cast())
+    } else if LEAN_MIMALLOC {
+        #[cfg(feature = "libmimalloc-sys")]
+        libmimalloc_sys::mi_free(o.cast())
     } else {
-        libc::free((o as *mut usize).sub(1) as *mut _)
+        extern "C" {
+            fn free_sized(ptr: *mut c_void, _: usize);
+        }
+        let ptr = o.cast::<usize>().sub(1);
+        free_sized(ptr.cast(), *ptr + size_of::<usize>());
     }
 }
 
@@ -260,21 +292,17 @@ pub unsafe fn lean_get_rc_mt_addr(o: *mut lean_object) -> *mut c_int {
 }
 
 #[inline]
-pub unsafe fn lean_inc_ref(o: *mut lean_object) {
-    if lean_is_st(o) {
-        *(raw_field!(o, lean_object, m_rc) as *mut c_int) += 1
-    } else if *raw_field!(o, lean_object, m_rc) != 0 {
-        lean_inc_ref_cold(o)
-    }
-}
-
-#[inline]
 pub unsafe fn lean_inc_ref_n(o: *mut lean_object, n: usize) {
     if lean_is_st(o) {
         *(raw_field!(o, lean_object, m_rc) as *mut c_int) += n as c_int
     } else if *raw_field!(o, lean_object, m_rc) != 0 {
-        lean_inc_ref_n_cold(o, n as c_uint)
+        (*lean_get_rc_mt_addr(o).cast::<AtomicU32>()).fetch_sub(n as c_uint, Ordering::Relaxed);
     }
+}
+
+#[inline]
+pub unsafe fn lean_inc_ref(o: *mut lean_object) {
+    lean_inc_ref_n(o, 1)
 }
 
 #[inline]
@@ -348,6 +376,11 @@ pub unsafe fn lean_is_task(o: *const lean_object) -> bool {
 }
 
 #[inline(always)]
+pub unsafe fn lean_is_promise(o: *const lean_object) -> bool {
+    lean_ptr_tag(o) == LeanPromise
+}
+
+#[inline(always)]
 pub unsafe fn lean_is_external(o: *const lean_object) -> bool {
     lean_ptr_tag(o) == LeanExternal
 }
@@ -369,55 +402,61 @@ pub unsafe fn lean_obj_tag(o: *const lean_object) -> c_uint {
 #[inline(always)]
 pub unsafe fn lean_to_ctor(o: *mut lean_object) -> *mut lean_ctor_object {
     debug_assert!(lean_is_ctor(o));
-    o as *mut lean_ctor_object
+    o.cast()
 }
 
 #[inline(always)]
 pub unsafe fn lean_to_closure(o: *mut lean_object) -> *mut lean_closure_object {
     debug_assert!(lean_is_closure(o));
-    o as *mut lean_closure_object
+    o.cast()
 }
 
 #[inline(always)]
 pub unsafe fn lean_to_array(o: *mut lean_object) -> *mut lean_array_object {
     debug_assert!(lean_is_array(o));
-    o as *mut lean_array_object
+    o.cast()
 }
 
 #[inline(always)]
 pub unsafe fn lean_to_sarray(o: *mut lean_object) -> *mut lean_sarray_object {
     debug_assert!(lean_is_sarray(o));
-    o as *mut lean_sarray_object
+    o.cast()
 }
 
 #[inline(always)]
 pub unsafe fn lean_to_string(o: *mut lean_object) -> *mut lean_string_object {
     debug_assert!(lean_is_string(o));
-    o as *mut lean_string_object
+    o.cast()
 }
 
 #[inline(always)]
 pub unsafe fn lean_to_thunk(o: *mut lean_object) -> *mut lean_thunk_object {
     debug_assert!(lean_is_thunk(o));
-    o as *mut lean_thunk_object
+    o.cast()
 }
 
 #[inline(always)]
 pub unsafe fn lean_to_task(o: *mut lean_object) -> *mut lean_task_object {
     debug_assert!(lean_is_task(o));
-    o as *mut lean_task_object
+    o.cast()
+}
+
+#[inline(always)]
+pub unsafe fn lean_to_promise(o: *mut lean_object) -> *mut lean_promise_object {
+    debug_assert!(lean_is_promise(o));
+    o.cast()
 }
 
 #[inline(always)]
 pub unsafe fn lean_to_ref(o: *mut lean_object) -> *mut lean_ref_object {
     debug_assert!(lean_is_ref(o));
-    o as *mut lean_ref_object
+    o.cast()
 }
 
 #[inline(always)]
 pub unsafe fn lean_to_external(o: *mut lean_object) -> *mut lean_external_object {
     debug_assert!(lean_is_external(o));
-    o as *mut lean_external_object
+    o.cast()
 }
 
 #[inline]
@@ -448,9 +487,12 @@ pub unsafe fn lean_is_shared(o: *mut lean_object) -> bool {
 #[inline]
 pub unsafe fn lean_set_st_header(o: *mut lean_object, tag: c_uint, other: c_uint) {
     *lean_get_rc_mt_addr(o) = 1;
-    (raw_field!(o, lean_object, m_cs_sz) as *mut u16).write(0);
     (raw_field!(o, lean_object, m_other) as *mut u8).write(other as u8);
     (raw_field!(o, lean_object, m_tag) as *mut u8).write(tag as u8);
+    if !LEAN_MIMALLOC {
+        // already initialized by `lean_alloc(_small)_object` when using mimalloc
+        (raw_field!(o, lean_object, m_cs_sz) as *mut u16).write(0);
+    }
 }
 
 /** Remark: we don't need a reference counter for objects that are not stored in the heap.
@@ -476,6 +518,7 @@ extern "C" {
     pub fn lean_set_exit_on_panic(flag: bool);
     /// Enable/disable panic messages
     pub fn lean_set_panic_messages(flag: bool);
+    pub fn lean_panic(msg: *const u8, force_stderr: bool);
     pub fn lean_panic_fn(default_val: *mut lean_object, msg: *mut lean_object);
     pub fn lean_internal_panic(msg: *const u8) -> !;
     pub fn lean_internal_panic_out_of_memory() -> !;
@@ -499,10 +542,6 @@ extern "C" {
     from an object's storage must only access these parts, since
     the non-salient parts may not be initialized. */
     pub fn lean_object_data_byte_size(o: *mut lean_object) -> usize;
-    #[cold]
-    pub fn lean_inc_ref_cold(o: *mut lean_object);
-    #[cold]
-    pub fn lean_inc_ref_n_cold(o: *mut lean_object, n: c_uint);
     #[cold]
     pub fn lean_dec_ref_cold(o: *mut lean_object);
     pub fn lean_mark_mt(o: *mut lean_object);

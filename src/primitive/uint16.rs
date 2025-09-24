@@ -86,6 +86,11 @@ pub fn lean_uint16_complement(a: u16) -> u16 {
 }
 
 #[inline(always)]
+pub fn lean_uint16_neg(a: u16) -> u16 {
+    0 - a
+}
+
+#[inline(always)]
 pub fn lean_uint16_dec_eq(a1: u16, a2: u16) -> u16 {
     (a1 == a2) as u16
 }

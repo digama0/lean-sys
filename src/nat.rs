@@ -77,9 +77,24 @@ pub unsafe fn lean_nat_mul(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_r
 pub unsafe fn lean_nat_div(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_res {
     if lean_is_scalar(a1) && lean_is_scalar(a2) {
         //TODO: likely
-        lean_box(lean_unbox(a1).saturating_div(lean_unbox(a2)))
+        let n1 = lean_unbox(a1);
+        let n2 = lean_unbox(a2);
+        lean_box(if n2 == 0 { 0 } else { n1.saturating_div(n2) })
     } else {
         lean_nat_big_div(a1, a2)
+    }
+}
+
+/// assumes that a1 % a2 = 0
+#[inline]
+pub unsafe fn lean_nat_div_exact(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_res {
+    if lean_is_scalar(a1) && lean_is_scalar(a2) {
+        //TODO: likely
+        let n1 = lean_unbox(a1);
+        let n2 = lean_unbox(a2);
+        lean_box(if n2 == 0 { 0 } else { n1.saturating_div(n2) })
+    } else {
+        lean_nat_big_div_exact(a1, a2)
     }
 }
 
@@ -168,6 +183,23 @@ pub unsafe fn lean_nat_lxor(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_
     }
 }
 
+#[inline]
+pub unsafe fn lean_nat_shiftr(a1: b_lean_obj_arg, a2: b_lean_obj_arg) -> lean_obj_res {
+    if lean_is_scalar(a1) && lean_is_scalar(a2) {
+        //TODO: likely
+        let s1 = lean_unbox(a1);
+        let s2 = lean_unbox(a2);
+        let r = if s2 < size_of::<usize>() * 8 {
+            s1 >> s2
+        } else {
+            0
+        };
+        lean_box(r)
+    } else {
+        lean_nat_big_shiftr(a1, a2)
+    }
+}
+
 extern "C" {
     pub fn lean_nat_big_succ(a: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_big_add(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
@@ -175,6 +207,7 @@ extern "C" {
     pub fn lean_nat_big_mul(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_overflow_mul(a1: usize, a2: usize) -> *mut lean_object;
     pub fn lean_nat_big_div(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
+    pub fn lean_nat_big_div_exact(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_big_mod(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_big_eq(a1: *mut lean_object, a2: *mut lean_object) -> bool;
     pub fn lean_nat_big_le(a1: *mut lean_object, a2: *mut lean_object) -> bool;
@@ -188,7 +221,7 @@ extern "C" {
     pub fn lean_big_uint64_to_nat(n: u64) -> *mut lean_object;
 
     pub fn lean_nat_shiftl(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
-    pub fn lean_nat_shiftr(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
+    pub fn lean_nat_big_shiftr(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_pow(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_gcd(a1: *mut lean_object, a2: *mut lean_object) -> *mut lean_object;
     pub fn lean_nat_log2(a: *mut lean_object) -> *mut lean_object;
@@ -218,7 +251,7 @@ mod test {
             let mut vec = std::vec::Vec::with_capacity(100);
             for _ in 0..10 {
                 for _ in 0..100 {
-                    vec.push(rng.gen::<u64>())
+                    vec.push(rng.random::<u64>())
                 }
                 let r = slice_mul(&vec[..]);
                 const M: u64 = 595468;

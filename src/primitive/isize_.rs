@@ -96,6 +96,11 @@ pub fn lean_isize_complement(a: usize) -> usize {
 }
 
 #[inline(always)]
+pub fn lean_isize_abs(a: usize) -> usize {
+    (a as isize).unsigned_abs()
+}
+
+#[inline(always)]
 pub fn lean_isize_dec_eq(a1: usize, a2: usize) -> usize {
     (a1 as isize == a2 as isize) as usize
 }
@@ -110,6 +115,14 @@ pub fn lean_isize_dec_le(a1: usize, a2: usize) -> usize {
     (a1 as isize <= a2 as isize) as usize
 }
 
+#[inline]
+pub fn lean_isize_to_int8(a: usize) -> u8 {
+    a as isize as i8 as u8
+}
+#[inline]
+pub fn lean_isize_to_int16(a: usize) -> u16 {
+    a as isize as i16 as u16
+}
 #[inline]
 pub fn lean_isize_to_int32(a: usize) -> u32 {
     a as isize as i32 as u32

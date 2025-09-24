@@ -80,6 +80,11 @@ pub fn lean_uint64_complement(a: u64) -> u64 {
 }
 
 #[inline(always)]
+pub fn lean_uint64_neg(a: u64) -> u64 {
+    0 - a
+}
+
+#[inline(always)]
 pub fn lean_uint64_dec_eq(a1: u64, a2: u64) -> u64 {
     (a1 == a2) as u64
 }

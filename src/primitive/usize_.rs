@@ -80,6 +80,11 @@ pub fn lean_usize_complement(a: usize) -> usize {
 }
 
 #[inline(always)]
+pub fn lean_usize_neg(a: usize) -> usize {
+    0 - a
+}
+
+#[inline(always)]
 pub fn lean_usize_dec_eq(a1: usize, a2: usize) -> usize {
     (a1 == a2) as usize
 }

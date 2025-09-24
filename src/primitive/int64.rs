@@ -94,6 +94,11 @@ pub fn lean_int64_complement(a: u64) -> u64 {
 }
 
 #[inline(always)]
+pub fn lean_int64_abs(a: u64) -> u64 {
+    (a as i64).unsigned_abs()
+}
+
+#[inline(always)]
 pub fn lean_int64_dec_eq(a1: u64, a2: u64) -> u64 {
     (a1 as i64 == a2 as i64) as u64
 }

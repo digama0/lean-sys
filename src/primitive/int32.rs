@@ -94,6 +94,11 @@ pub fn lean_int32_complement(a: u32) -> u32 {
 }
 
 #[inline(always)]
+pub fn lean_int32_abs(a: u32) -> u32 {
+    (a as i32).unsigned_abs()
+}
+
+#[inline(always)]
 pub fn lean_int32_dec_eq(a1: u32, a2: u32) -> u32 {
     (a1 as i32 == a2 as i32) as u32
 }

@@ -30,6 +30,15 @@ pub unsafe fn lean_io_result_get_error(r: b_lean_obj_arg) -> b_lean_obj_res {
 }
 
 #[inline(always)]
+pub unsafe fn lean_io_result_take_value(r: lean_obj_arg) -> lean_obj_res {
+    debug_assert!(lean_io_result_is_ok(r));
+    let v = lean_ctor_get(r, 0);
+    lean_inc(v);
+    lean_dec(r);
+    v
+}
+
+#[inline(always)]
 pub unsafe fn lean_io_result_mk_ok(a: lean_obj_arg) -> lean_obj_res {
     let r = lean_alloc_ctor(0, 2, 0);
     lean_ctor_set(r, 0, a);

@@ -86,6 +86,11 @@ pub fn lean_uint8_complement(a: u8) -> u8 {
 }
 
 #[inline(always)]
+pub fn lean_uint8_neg(a: u8) -> u8 {
+    0 - a
+}
+
+#[inline(always)]
 pub fn lean_uint8_dec_eq(a1: u8, a2: u8) -> u8 {
     (a1 == a2) as u8
 }

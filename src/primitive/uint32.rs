@@ -85,6 +85,11 @@ pub fn lean_uint32_complement(a: u32) -> u32 {
 }
 
 #[inline(always)]
+pub fn lean_uint32_neg(a: u32) -> u32 {
+    0 - a
+}
+
+#[inline(always)]
 pub fn lean_uint32_dec_eq(a1: u32, a2: u32) -> u32 {
     (a1 == a2) as u32
 }

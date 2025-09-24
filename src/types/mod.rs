@@ -117,8 +117,8 @@ the task terminates even if the task object itself is still referenced. */
 #[derive(Debug, Copy, Clone)]
 pub struct lean_task_imp {
     pub m_closure: *mut lean_object,
-    pub m_head_dep: *mut lean_task,
-    pub m_next_dep: *mut lean_task,
+    pub m_head_dep: *mut lean_task_object,
+    pub m_next_dep: *mut lean_task_object,
     pub m_prio: c_uint,
     pub m_canceled: u8,
     /// If true, task will not be freed until finished
@@ -180,13 +180,19 @@ states:
 */
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct lean_task {
+pub struct lean_task_object {
     pub m_header: lean_object,
     pub m_value: u64,
     pub m_imp: *mut lean_task_imp,
 }
 
-pub type lean_task_object = lean_task;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct lean_promise_object {
+    pub m_header: lean_object,
+    pub m_result: *mut lean_task_object,
+}
+
 pub type lean_external_finalize_proc = Option<unsafe extern "C" fn(arg1: *mut c_void)>;
 pub type lean_external_foreach_proc =
     Option<unsafe extern "C" fn(arg1: *mut c_void, arg2: b_lean_obj_arg)>;
