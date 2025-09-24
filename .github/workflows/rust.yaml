@@ -18,7 +18,7 @@ jobs:
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
       - name: Initialize Rustup
         run: |
-          rustup toolchain install nightly --component rustfmt clippy --profile minimal --force
+          rustup toolchain install nightly --component rustfmt,clippy --profile minimal --force
           rustup override set nightly
       - name: Run build
         run: cargo build --verbose
